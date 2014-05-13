@@ -31,8 +31,8 @@ import com.parse.ParseQuery;
 
 public class ApprovePromotionFragment extends Fragment {
 
-	protected final static String TAG = ApprovePromotionFragment.class.getSimpleName()
-			.toString();
+	protected final static String TAG = ApprovePromotionFragment.class
+			.getSimpleName().toString();
 
 	// UI Variable
 	Button mDiscoverButtonCheckIn;
@@ -46,7 +46,8 @@ public class ApprovePromotionFragment extends Fragment {
 
 	// Parse Constants
 
-	public static ApprovePromotionFragment newInstance(String param1, String param2) {
+	public static ApprovePromotionFragment newInstance(String param1,
+			String param2) {
 		ApprovePromotionFragment fragment = new ApprovePromotionFragment();
 		Bundle args = new Bundle();
 		fragment.setArguments(args);
@@ -78,8 +79,8 @@ public class ApprovePromotionFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		View view = inflater.inflate(R.layout.fragment_approve_promotion, container,
-				false);
+		View view = inflater.inflate(R.layout.fragment_approve_promotion,
+				container, false);
 
 		// Declare UI
 		mDiscoverButtonBrowse = (Button) view
@@ -95,6 +96,36 @@ public class ApprovePromotionFragment extends Fragment {
 	/*
 	 * Function Added
 	 */
+
+	/*
+	 * Checking Promotion
+	 */
+
+	private void approvePromotion() {
+		String objectId = null;
+		ParseQuery<ParseObject> query = ParseQuery
+				.getQuery(ParseConstants.TABLE_ACTV_USER_CLAIM_PROMOTION);
+		query.include(ParseConstants.KEY_PROMOTION_ID);
+		query.include(ParseConstants.KEY_USER_ID);
+		query.getInBackground(objectId, new GetCallback<ParseObject>() {
+
+			@Override
+			public void done(ParseObject promotion, ParseException e) {
+				if (e == null) {
+					ParseObject tempUser = promotion
+							.getParseObject(ParseConstants.KEY_USER_ID);
+					ParseObject tempPromotion = promotion
+							.getParseObject(ParseConstants.KEY_PROMOTION_ID);
+					// if is claimed is false then return false
+					// else change it to true
+					promotion.put(ParseConstants.KEY_IS_CLAIMED, true);
+					promotion.saveInBackground();
+				} else {
+					errorAlertDialog(e);
+				}
+			}
+		});
+	}
 
 	/*
 	 * Error Dialog
