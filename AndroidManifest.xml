@@ -9,10 +9,11 @@
         android:targetSdkVersion="19" />
 
     <application
+        android:name="com.example.storeinbusiness.StoreInBusinessApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" android:name="com.example.storeinbusiness.StoreInBusinessApplication">
+        android:theme="@style/AppTheme" >
         <activity
             android:name="com.example.storeinbusiness.MainActivity"
             android:label="@string/app_name" >
@@ -21,6 +22,10 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="com.example.storeinbusiness.LoginActivity"
+            android:label="@string/title_activity_login" >
         </activity>
     </application>
 
