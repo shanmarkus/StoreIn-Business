@@ -1,6 +1,7 @@
 package com.example.storeinbusiness;
 
 import java.io.ByteArrayOutputStream;
+import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -19,6 +20,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -160,6 +162,32 @@ public class ItemDetail extends Fragment {
 	}
 
 	/*
+	 * Remove User Review if the store change their item
+	 */
+
+	private void removeAllComments() {
+		String itemId = getItemId();
+		ParseQuery<ParseObject> query = ParseQuery
+				.getQuery(ParseConstants.TABLE_ITEM_REVIEW);
+		query.whereEqualTo(ParseConstants.KEY_ITEM_ID, itemId);
+		query.findInBackground(new FindCallback<ParseObject>() {
+
+			@Override
+			public void done(List<ParseObject> objects, ParseException e) {
+				if (e == null) {
+					for (ParseObject object : objects) {
+						object.deleteInBackground();
+					}
+					Toast.makeText(getActivity(), "delete comments successful",
+							Toast.LENGTH_SHORT).show();
+				} else {
+					parseErrorDialog(e);
+				}
+			}
+		});
+	}
+
+	/*
 	 * update details item to the database on clickbutton
 	 */
 
@@ -177,11 +205,14 @@ public class ItemDetail extends Fragment {
 					if (e == null) {
 						if (item.getString(ParseConstants.KEY_NAME).equals(
 								itemTitle)) {
+							item.put(ParseConstants.KEY_NAME, itemTitle);
+							item.put(ParseConstants.KEY_DESCRIPTION, itemDesc);
 							item.put(ParseConstants.KEY_RATING, 0);
 							item.put(ParseConstants.KEY_TOTAL_LOVED, 0);
+							removeAllComments();
+						} else {
+							item.put(ParseConstants.KEY_DESCRIPTION, itemDesc);
 						}
-						item.put(ParseConstants.KEY_NAME, itemTitle);
-						item.put(ParseConstants.KEY_DESCRIPTION, itemDesc);
 						item.saveInBackground();
 						Toast.makeText(getActivity(), "Item Updated",
 								Toast.LENGTH_SHORT).show();
@@ -208,6 +239,8 @@ public class ItemDetail extends Fragment {
 						ParseFile image = new ParseFile(itemTitle + ".jpg",
 								scaledData);
 						image.saveInBackground();
+						Toast.makeText(getActivity(), "Image Updated",
+								Toast.LENGTH_SHORT).show();
 					} else {
 						parseErrorDialog(e);
 					}
