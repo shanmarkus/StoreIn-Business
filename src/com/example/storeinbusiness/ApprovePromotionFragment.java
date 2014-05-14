@@ -118,8 +118,21 @@ public class ApprovePromotionFragment extends Fragment {
 							.getParseObject(ParseConstants.KEY_PROMOTION_ID);
 					// if is claimed is false then return false
 					// else change it to true
-					promotion.put(ParseConstants.KEY_IS_CLAIMED, true);
-					promotion.saveInBackground();
+
+					boolean status = promotion
+							.getBoolean(ParseConstants.KEY_IS_CLAIMED);
+					if (status == false) {
+						promotion.put(ParseConstants.KEY_IS_CLAIMED, true);
+						promotion.saveInBackground();
+						Toast.makeText(getActivity(),
+								"Promotion Claimed",
+								Toast.LENGTH_SHORT).show();
+					} else {
+						Toast.makeText(getActivity(),
+								"User already claimed this promotion",
+								Toast.LENGTH_SHORT).show();
+					}
+
 				} else {
 					errorAlertDialog(e);
 				}
