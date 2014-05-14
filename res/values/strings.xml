@@ -13,6 +13,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_item_detail">ItemDetail</string>
     <string name="item_detail_title">Item Name</string>
+    <string name="error_title">Oops Sorry !</string>
     <string name="item_detail_description">"Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse"</string>
 
 </resources>

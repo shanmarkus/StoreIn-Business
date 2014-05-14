@@ -1,43 +1,39 @@
 package com.example.storeinbusiness;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.RatingBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.parse.CountCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseImageView;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 public class ItemDetail extends Fragment {
 	private static final String TAG = ItemDetail.class.getSimpleName();
 
 	// UI Variable Declaration
 	ParseImageView mImageView;
-	ImageButton mBtnLoveIt;
-	Button mBtnReviewIt;
-	TextView mItemTitleLabel;
-	TextView mItemDescription;
-	TextView mTextItemDetailTotalReward;
-	RatingBar mRattingBar;
 
 	// Fixed Variables
 	private Integer totalLoved;
+	public final static int REQ_CODE_PICK_IMAGE = 1;
+	String itemTitle;
+	String itemDesc;
 
 	// Parse Variables
 	ParseUser user = ParseUser.getCurrentUser();
@@ -57,21 +53,10 @@ public class ItemDetail extends Fragment {
 				container, false);
 
 		// Declare UI Variables
-		mImageView = (ParseImageView) rootView.findViewById(R.id.imageView);
-		mBtnLoveIt = (ImageButton) rootView.findViewById(R.id.btnLoveIt);
-		mBtnReviewIt = (Button) rootView.findViewById(R.id.btnReviewIt);
-		mItemTitleLabel = (TextView) rootView.findViewById(R.id.itemTitleLabel);
-		mItemDescription = (TextView) rootView
-				.findViewById(R.id.itemDescriptionLabel);
-		mTextItemDetailTotalReward = (TextView) rootView
-				.findViewById(R.id.textItemDetailTotalReward);
-		mRattingBar = (RatingBar) rootView.findViewById(R.id.ratingBar1);
 
 		// Intent Variables
 		// Setup Variable from the previous intents
 		getItemId();
-
-		isLoved = getActivity().getIntent().getExtras().getString("isLoved");
 
 		// Find Item Details
 		findItemDetail();
@@ -82,10 +67,36 @@ public class ItemDetail extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		findAllUI();
-		onClickReviewItButton();
-		checkLoveButton();
+
 	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode,
+			Intent imageReturnedIntent) {
+		super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+
+		switch (requestCode) {
+		case REQ_CODE_PICK_IMAGE:
+			if (resultCode == Activity.RESULT_OK) {
+				Uri selectedImage = imageReturnedIntent.getData();
+				String[] filePathColumn = { MediaStore.Images.Media.DATA };
+
+				Cursor cursor = getActivity().getContentResolver().query(
+						selectedImage, filePathColumn, null, null, null);
+				cursor.moveToFirst();
+
+				int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+				String filePath = cursor.getString(columnIndex);
+				cursor.close();
+
+				Bitmap yourSelectedImage = BitmapFactory.decodeFile(filePath);
+			}
+		}
+	}
+
+	/*
+	 * Added function
+	 */
 
 	/*
 	 * Getter for placeId variables
@@ -94,177 +105,6 @@ public class ItemDetail extends Fragment {
 		Bundle args = getArguments();
 		itemId = args.getString(ParseConstants.KEY_OBJECT_ID);
 		return itemId;
-	}
-
-	/*
-	 * Dumb function to protect if the UI variable will return null
-	 */
-
-	protected void findAllUI() {
-		// Declare UI Variables
-		mBtnLoveIt = (ImageButton) getActivity().findViewById(R.id.btnLoveIt);
-		mBtnReviewIt = (Button) getActivity().findViewById(R.id.btnReviewIt);
-		mItemTitleLabel = (TextView) getActivity().findViewById(
-				R.id.itemTitleLabel);
-		mItemDescription = (TextView) getActivity().findViewById(
-				R.id.itemDescriptionLabel);
-	}
-
-	/*
-	 * Check whether user already love the item or not
-	 */
-	public void checkLoveButton() {
-		// Set Progress Bar
-		getActivity().setProgressBarIndeterminateVisibility(true);
-		// Do Query
-		ParseQuery<ParseObject> query = ParseQuery
-				.getQuery(ParseConstants.TABLE_ITEM_LOVED);
-		query.whereEqualTo(ParseConstants.KEY_ITEM_ID, itemId);
-		query.whereEqualTo(ParseConstants.KEY_USER_ID, userId);
-		query.countInBackground(new CountCallback() {
-
-			@Override
-			public void done(int love, ParseException e) {
-				// Set Progress Bar
-				getActivity().setProgressBarIndeterminateVisibility(false);
-				if (e == null) {
-					// success
-					if (love != 0) {
-						isLoved = "true";
-						// mBtnLoveIt.setText("Un-Love It");
-						onClickLoveItButton();
-					} else {
-						isLoved = "false";
-						// mBtnLoveIt.setText("Love It");
-						onClickLoveItButton();
-					}
-				} else {
-					// failed
-					parseErrorDialog(e);
-				}
-			}
-		});
-	}
-
-	/*
-	 * On Click Listener
-	 */
-
-	// when user already love the items
-	OnClickListener isLovedTrue = new OnClickListener() {
-		@Override
-		public void onClick(View v) {
-			// Create Toast
-			debugLoveVar();
-
-			// Set Progress Bar
-			getActivity().setProgressBarIndeterminateVisibility(true);
-			ParseQuery<ParseObject> query = ParseQuery
-					.getQuery(ParseConstants.TABLE_ITEM_LOVED);
-			query.whereEqualTo(ParseConstants.KEY_USER_ID, userId);
-			query.whereEqualTo(ParseConstants.KEY_ITEM_ID, itemId);
-			query.getFirstInBackground(new GetCallback<ParseObject>() {
-
-				@Override
-				public void done(ParseObject itemLoved, ParseException e) {
-					// Set Progress Bar
-					getActivity().setProgressBarIndeterminateVisibility(false);
-					if (e == null) {
-						try {
-							itemLoved.delete();
-							checkLoveButton();
-							Toast.makeText(getActivity(),
-									" UnLove it Parse success",
-									Toast.LENGTH_SHORT).show();
-							queryTotalLoved();
-							onResume();
-
-						} catch (ParseException e1) {
-							e1.printStackTrace();
-						}
-
-					} else {
-						// failed
-						parseErrorDialog(e);
-					}
-				}
-			});
-		}
-	};
-
-	// when user have not love the items
-	OnClickListener isLovedFalse = new OnClickListener() {
-
-		@Override
-		public void onClick(View v) {
-			// create toast
-			debugLoveVar();
-
-			// Set Progress Bar
-			getActivity().setProgressBarIndeterminateVisibility(true);
-
-			// Do the query
-			ParseObject itemLoved = new ParseObject(
-					ParseConstants.TABLE_ITEM_LOVED);
-			itemLoved.put(ParseConstants.KEY_USER_ID, userId);
-			itemLoved.put(ParseConstants.KEY_ITEM_ID, itemId);
-			itemLoved.saveInBackground(new SaveCallback() {
-
-				@Override
-				public void done(ParseException e) {
-					// Set Progress Bar
-					getActivity().setProgressBarIndeterminateVisibility(false);
-					if (e == null) {
-						// Success
-						checkLoveButton();
-						Toast.makeText(getActivity(), "Love it Parse success",
-								Toast.LENGTH_SHORT).show();
-						queryTotalLoved();
-						onResume();
-					} else {
-						// failed
-						parseErrorDialog(e);
-					}
-
-				}
-			});
-		}
-	};
-
-	/*
-	 * When user click the Love It Button
-	 */
-	public void onClickLoveItButton() {
-		// Check whether the variables is null or not
-		if (isLoved == null) {
-			checkLoveButton();
-		}
-
-		if (isLoved.equals("false")) {
-			// The user HAVE NOT liked it
-			mBtnLoveIt.setOnClickListener(isLovedFalse);
-		} else if (isLoved.equals("true")) {
-			// User ALREADY like the item
-			mBtnLoveIt.setOnClickListener(isLovedTrue);
-		}
-	}
-
-	/*
-	 * When user wants to review the item by giving comments and ratings
-	 */
-	public void onClickReviewItButton() {
-		mBtnReviewIt = (Button) getActivity().findViewById(R.id.btnReviewIt);
-		mBtnReviewIt.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent(getActivity(), WriteReviewItem.class);
-				intent.putExtra(ParseConstants.KEY_OBJECT_ID, itemId);
-				intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-				startActivity(intent);
-			}
-		});
-
 	}
 
 	/*
@@ -286,18 +126,9 @@ public class ItemDetail extends Fragment {
 				getActivity().setProgressBarIndeterminate(false);
 				if (e == null) {
 					// success
-					findAllUI();
-					String title = item.getString(ParseConstants.KEY_NAME);
-					String description = item
-							.getString(ParseConstants.KEY_DESCRIPTION);
-					Integer totalLoved = item
-							.getInt(ParseConstants.KEY_TOTAL_LOVED);
-					Integer numStars = item.getInt(ParseConstants.KEY_RATING);
+					itemTitle = item.getString(ParseConstants.KEY_NAME);
+					itemDesc = item.getString(ParseConstants.KEY_DESCRIPTION);
 
-					mRattingBar.setNumStars(numStars);
-					mItemTitleLabel.setText(title);
-					mItemDescription.setText(description);
-					mTextItemDetailTotalReward.setText(totalLoved + "");
 				} else {
 					// failed
 					parseErrorDialog(e);
@@ -308,65 +139,50 @@ public class ItemDetail extends Fragment {
 	}
 
 	/*
-	 * Updating if the user love items
+	 * Intent on finding image on gallery
 	 */
 
-	private void queryTotalLoved() {
-		ParseQuery<ParseObject> query = ParseQuery
-				.getQuery(ParseConstants.TABLE_ITEM_LOVED);
-		query.whereEqualTo(ParseConstants.KEY_ITEM_ID, itemId);
-		query.countInBackground(new CountCallback() {
-
-			@Override
-			public void done(int total, ParseException e) {
-				if (e == null) {
-					// success
-					totalLoved = total;
-					updateTotalLoved();
-				} else {
-					// failed
-					parseErrorDialog(e);
-				}
-			}
-		});
-	}
-
-	private void updateTotalLoved() {
-		ParseQuery<ParseObject> query = ParseQuery
-				.getQuery(ParseConstants.TABLE_ITEM);
-		query.getInBackground(itemId, new GetCallback<ParseObject>() {
-
-			@Override
-			public void done(ParseObject item, ParseException e) {
-				if (e == null) {
-					item.put(ParseConstants.KEY_TOTAL_LOVED, totalLoved);
-					Toast.makeText(getActivity(),
-							"updatedTotalLoved" + totalLoved,
-							Toast.LENGTH_SHORT).show();
-					item.saveInBackground();
-				} else {
-					parseErrorDialog(e);
-				}
-			}
-		});
-
+	private void getImage() {
+		Intent i = new Intent(Intent.ACTION_PICK,
+				android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+		startActivityForResult(i, REQ_CODE_PICK_IMAGE);
 	}
 
 	/*
-	 * Debug Toast
+	 * update details item to the database on clickbutton
 	 */
 
-	private void debugLoveVar() {
-		String tempMessage;
-		if (isLoved.equals("false")) {
-			tempMessage = "Thank you for the Love";
-		} else {
-			tempMessage = "UnLove the items";
+	OnClickListener updateInfo = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			String itemId = getItemId();
+			ParseQuery<ParseObject> query = ParseQuery
+					.getQuery(ParseConstants.TABLE_ITEM);
+			query.getInBackground(itemId, new GetCallback<ParseObject>() {
+
+				@Override
+				public void done(ParseObject item, ParseException e) {
+					if (e == null) {
+						item.put(ParseConstants.KEY_NAME, itemTitle);
+						item.put(ParseConstants.KEY_DESCRIPTION, itemDesc);
+						item.saveInBackground();
+					} else {
+						parseErrorDialog(e);
+					}
+				}
+			});
 		}
-		Toast.makeText(getActivity(), isLoved, Toast.LENGTH_SHORT).show();
-		// Toast Dialog
-		Toast.makeText(getActivity(), tempMessage, Toast.LENGTH_SHORT).show();
-	}
+	};
+
+	OnClickListener updateImage = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			ParseQuery<ParseObject> query = ParseQuery.getQuery(ParseCo)
+
+		}
+	};
 
 	/*
 	 * Debug if ParseException throw the alert dialog
