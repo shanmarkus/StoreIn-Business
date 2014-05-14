@@ -35,6 +35,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.storeinbusiness.MainActivity" />
         </activity>
+        <activity
+            android:name="com.example.storeinbusiness.BroadcastActivity"
+            android:label="@string/title_activity_broadcast" >
+        </activity>
     </application>
 
 </manifest>
