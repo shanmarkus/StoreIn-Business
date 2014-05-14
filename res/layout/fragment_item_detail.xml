@@ -9,53 +9,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
-        <com.parse.ParseImageView
-            android:id="@+id/imageView"
-            android:layout_width="fill_parent"
-            android:layout_height="140dp"
-            android:alpha=".9"
-            android:contentDescription="@string/image_preview_text"
-            android:scaleType="centerCrop"
-            android:src="@drawable/himeji" />
-
-        <RelativeLayout
-            android:id="@+id/firstRelativeLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/imageView" >
-
-            <LinearLayout
-                android:id="@+id/thumbnailSecond"
-                android:layout_width="120dip"
-                android:layout_height="60dip"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="5dip"
-                android:orientation="horizontal"
-                android:padding="0dip" >
-
-                <TextView
-                    android:id="@+id/textItemDetailTotalReward"
-                    android:layout_width="70dip"
-                    android:layout_height="fill_parent"
-                    android:gravity="center"
-                    android:text="@string/list_item_total_loved"
-                    android:textSize="35sp" />
-
-                <ImageView
-                    android:id="@+id/imageRewardIcon"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="10dp"
-                    android:contentDescription="heart_beat"
-                    android:src="@drawable/heart_bpm" />
-            </LinearLayout>
-        </RelativeLayout>
-
         <RelativeLayout
             android:id="@+id/secondRelativeLayout"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/firstRelativeLayout" >
+            android:layout_height="wrap_content" >
 
             <TextView
                 android:id="@+id/itemTitleLabel"
