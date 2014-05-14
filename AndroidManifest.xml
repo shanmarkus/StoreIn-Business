@@ -27,6 +27,14 @@
             android:name="com.example.storeinbusiness.LoginActivity"
             android:label="@string/title_activity_login" >
         </activity>
+        <activity
+            android:name="com.example.storeinbusiness.ItemDetail"
+            android:label="@string/title_activity_item_detail"
+            android:parentActivityName="com.example.storeinbusiness.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.storeinbusiness.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
