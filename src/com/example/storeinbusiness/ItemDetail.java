@@ -1,5 +1,7 @@
 package com.example.storeinbusiness;
 
+import java.io.ByteArrayOutputStream;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -15,9 +17,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.parse.GetCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseImageView;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -34,6 +38,8 @@ public class ItemDetail extends Fragment {
 	public final static int REQ_CODE_PICK_IMAGE = 1;
 	String itemTitle;
 	String itemDesc;
+	Bitmap yourSelectedImage;
+	byte[] scaledData;
 
 	// Parse Variables
 	ParseUser user = ParseUser.getCurrentUser();
@@ -89,7 +95,12 @@ public class ItemDetail extends Fragment {
 				String filePath = cursor.getString(columnIndex);
 				cursor.close();
 
-				Bitmap yourSelectedImage = BitmapFactory.decodeFile(filePath);
+				yourSelectedImage = BitmapFactory.decodeFile(filePath);
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				yourSelectedImage
+						.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+
+				scaledData = bos.toByteArray();
 			}
 		}
 	}
@@ -164,9 +175,16 @@ public class ItemDetail extends Fragment {
 				@Override
 				public void done(ParseObject item, ParseException e) {
 					if (e == null) {
+						if (item.getString(ParseConstants.KEY_NAME).equals(
+								itemTitle)) {
+							item.put(ParseConstants.KEY_RATING, 0);
+							item.put(ParseConstants.KEY_TOTAL_LOVED, 0);
+						}
 						item.put(ParseConstants.KEY_NAME, itemTitle);
 						item.put(ParseConstants.KEY_DESCRIPTION, itemDesc);
 						item.saveInBackground();
+						Toast.makeText(getActivity(), "Item Updated",
+								Toast.LENGTH_SHORT).show();
 					} else {
 						parseErrorDialog(e);
 					}
@@ -179,7 +197,23 @@ public class ItemDetail extends Fragment {
 
 		@Override
 		public void onClick(View v) {
-			ParseQuery<ParseObject> query = ParseQuery.getQuery(ParseCo)
+			String itemId = getItemId();
+			ParseQuery<ParseObject> query = ParseQuery
+					.getQuery(ParseConstants.TABLE_ITEM);
+			query.getInBackground(itemId, new GetCallback<ParseObject>() {
+
+				@Override
+				public void done(ParseObject item, ParseException e) {
+					if (e == null) {
+						ParseFile image = new ParseFile(itemTitle + ".jpg",
+								scaledData);
+						image.saveInBackground();
+					} else {
+						parseErrorDialog(e);
+					}
+
+				}
+			});
 
 		}
 	};
