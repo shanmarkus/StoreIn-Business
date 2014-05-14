@@ -146,7 +146,7 @@ public class TopItemsFragment extends Fragment {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
-			Intent intent = new Intent(getActivity(), ItemDetail.class);
+			Intent intent = new Intent(getActivity(), ItemInformation.class);
 			intent.putExtra(ParseConstants.KEY_ITEM_ID, itemId.get(position));
 			startActivity(intent);
 
