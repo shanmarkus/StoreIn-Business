@@ -180,58 +180,42 @@ public class PromotionDetail extends Fragment {
 	}
 
 	/*
-	 * Remove User Review if the store change their item
-	 */
-
-	private void removeAllComments() {
-		String itemId = getItemId();
-		ParseQuery<ParseObject> query = ParseQuery
-				.getQuery(ParseConstants.TABLE_ITEM_REVIEW);
-		query.whereEqualTo(ParseConstants.KEY_ITEM_ID, itemId);
-		query.findInBackground(new FindCallback<ParseObject>() {
-
-			@Override
-			public void done(List<ParseObject> objects, ParseException e) {
-				if (e == null) {
-					for (ParseObject object : objects) {
-						object.deleteInBackground();
-					}
-					Toast.makeText(getActivity(), "delete comments successful",
-							Toast.LENGTH_SHORT).show();
-				} else {
-					parseErrorDialog(e);
-				}
-			}
-		});
-	}
-
-	/*
-	 * update details item to the database on clickbutton
+	 * update details promotion to the database on clickbutton
 	 */
 
 	OnClickListener updateInfo = new OnClickListener() {
 
 		@Override
 		public void onClick(View v) {
-			String itemId = getItemId();
+			String promotionId = getPromotionId();
 			ParseQuery<ParseObject> query = ParseQuery
-					.getQuery(ParseConstants.TABLE_ITEM);
-			query.getInBackground(itemId, new GetCallback<ParseObject>() {
+					.getQuery(ParseConstants.TABLE_PROMOTION);
+			query.getInBackground(promotionId, new GetCallback<ParseObject>() {
 
 				@Override
-				public void done(ParseObject item, ParseException e) {
+				public void done(ParseObject promotion, ParseException e) {
 					if (e == null) {
-						if (item.getString(ParseConstants.KEY_NAME).equals(
-								itemTitle)) {
-							item.put(ParseConstants.KEY_NAME, itemTitle);
-							item.put(ParseConstants.KEY_DESCRIPTION, itemDesc);
-							item.put(ParseConstants.KEY_RATING, 0);
-							item.put(ParseConstants.KEY_TOTAL_LOVED, 0);
-							removeAllComments();
+						if (promotion.getString(ParseConstants.KEY_NAME)
+								.equals(promotionTitle)) {
+							promotion.put(ParseConstants.KEY_NAME,
+									promotionTitle);
+							promotion.put(ParseConstants.KEY_DESCRIPTION,
+									promotionDesc);
+							promotion.put(ParseConstants.KEY_REQUIREMENT,
+									promotionRequirement);
+							promotion.put(ParseConstants.KEY_START_DATE,
+									promotionStartDate);
+							promotion.put(ParseConstants.KEY_END_DATE,
+									promotionEndDate);
 						} else {
-							item.put(ParseConstants.KEY_DESCRIPTION, itemDesc);
+							promotion.put(ParseConstants.KEY_DESCRIPTION,
+									promotionDesc);
+							promotion.put(ParseConstants.KEY_START_DATE,
+									promotionStartDate);
+							promotion.put(ParseConstants.KEY_END_DATE,
+									promotionEndDate);
 						}
-						item.saveInBackground();
+						promotion.saveInBackground();
 						Toast.makeText(getActivity(), "Item Updated",
 								Toast.LENGTH_SHORT).show();
 					} else {
@@ -246,16 +230,16 @@ public class PromotionDetail extends Fragment {
 
 		@Override
 		public void onClick(View v) {
-			String itemId = getItemId();
+			String promotionId = getPromotionId();
 			ParseQuery<ParseObject> query = ParseQuery
 					.getQuery(ParseConstants.TABLE_ITEM);
-			query.getInBackground(itemId, new GetCallback<ParseObject>() {
+			query.getInBackground(promotionId, new GetCallback<ParseObject>() {
 
 				@Override
 				public void done(ParseObject item, ParseException e) {
 					if (e == null) {
-						ParseFile image = new ParseFile(itemTitle + ".jpg",
-								scaledData);
+						ParseFile image = new ParseFile(
+								promotionTitle + ".jpg", scaledData);
 						image.saveInBackground();
 						Toast.makeText(getActivity(), "Image Updated",
 								Toast.LENGTH_SHORT).show();
