@@ -1,17 +1,22 @@
 package com.example.storeinbusiness;
 
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.os.Build;
+
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 public class BroadcastActivity extends ActionBarActivity {
+	private static final String TAG = BroadcastActivity.class.getSimpleName();
+	
+	// Fixed Variables
+	private String placeId;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -34,9 +39,6 @@ public class BroadcastActivity extends ActionBarActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
 			return true;
@@ -58,6 +60,24 @@ public class BroadcastActivity extends ActionBarActivity {
 			View rootView = inflater.inflate(R.layout.fragment_broadcast,
 					container, false);
 			return rootView;
+		}
+
+		@Override
+		public void onResume() {
+			super.onResume();
+		}
+
+		/*
+		 * added function
+		 */
+		private void getInformation(){
+			p
+			ParseQuery<ParseObject> query = ParseQuery.getQuery(ParseConstants.TABLE_PLACE);
+			query
+		}
+
+		private void sendNotification() {
+
 		}
 	}
 
