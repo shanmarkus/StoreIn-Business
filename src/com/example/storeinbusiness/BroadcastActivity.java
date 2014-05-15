@@ -1,22 +1,26 @@
 package com.example.storeinbusiness;
 
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
+import com.parse.GetCallback;
+import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
 import com.parse.ParseQuery;
 
 public class BroadcastActivity extends ActionBarActivity {
 	private static final String TAG = BroadcastActivity.class.getSimpleName();
-	
-	// Fixed Variables
-	private String placeId;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +55,11 @@ public class BroadcastActivity extends ActionBarActivity {
 	 */
 	public static class PlaceholderFragment extends Fragment {
 
+		// Fixed Variables
+		private String placeID;
+		private String placeName;
+		private String message;
+
 		public PlaceholderFragment() {
 		}
 
@@ -70,15 +79,69 @@ public class BroadcastActivity extends ActionBarActivity {
 		/*
 		 * added function
 		 */
-		private void getInformation(){
-			p
-			ParseQuery<ParseObject> query = ParseQuery.getQuery(ParseConstants.TABLE_PLACE);
-			query
+
+		private void getPlaceId() {
+			Intent intent = getActivity().getIntent();
+			placeID = intent.getStringExtra(ParseConstants.KEY_PLACE_ID);
 		}
+
+		private void getInformation() {
+			if (placeID == null) {
+				getPlaceId();
+			}
+			ParseQuery<ParseObject> query = ParseQuery
+					.getQuery(ParseConstants.TABLE_PLACE);
+			query.getInBackground(placeID, new GetCallback<ParseObject>() {
+
+				@Override
+				public void done(ParseObject object, ParseException e) {
+					if (e == null) {
+						// success
+						placeName = object.getString(ParseConstants.KEY_NAME);
+					} else {
+						// failed
+						parseErrorDialog(e);
+					}
+				}
+			});
+		}
+
+		/*
+		 * On Click Listener
+		 */
+
+		OnClickListener sendButtonListener = new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				sendNotification();
+			}
+		};
+
+		/*
+		 * Send notification to users
+		 */
 
 		private void sendNotification() {
-
+			ParsePush push = new ParsePush();
+			push.setChannel(placeName);
+			push.setMessage("The Giants just scored! It's now 2-2 against the Mets.");
+			push.sendInBackground();
 		}
+
+		/*
+		 * Debug if ParseException throw the alert dialog
+		 */
+
+		protected void parseErrorDialog(ParseException e) {
+			Log.e(TAG, e.getMessage());
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+			builder.setMessage(e.getMessage()).setTitle(R.string.error_title)
+					.setPositiveButton(android.R.string.ok, null);
+			AlertDialog dialog = builder.create();
+			dialog.show();
+		}
+
 	}
 
 }
