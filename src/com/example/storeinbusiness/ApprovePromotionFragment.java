@@ -1,13 +1,16 @@
 package com.example.storeinbusiness;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.parse.GetCallback;
@@ -21,12 +24,12 @@ public class ApprovePromotionFragment extends Fragment {
 			.getSimpleName().toString();
 
 	// UI Variable
-	Button mDiscoverButtonCheckIn;
-	Button mDiscoverButtonBrowse;
-	Button mDiscoverButtonReccomendation;
+	EditText mTextCode;
+	Button mClaimeButton;
 
 	// Variables
 	private String placeId;
+	ProgressDialog progressDialog;
 
 	// Parse Constants
 
@@ -67,12 +70,6 @@ public class ApprovePromotionFragment extends Fragment {
 				container, false);
 
 		// Declare UI
-		mDiscoverButtonBrowse = (Button) view
-				.findViewById(R.id.discoverButtonBrowse);
-		mDiscoverButtonCheckIn = (Button) view
-				.findViewById(R.id.discoverButtonCheckIn);
-		mDiscoverButtonReccomendation = (Button) view
-				.findViewById(R.id.discoverButtonDiscover);
 
 		return view;
 	}
@@ -82,14 +79,41 @@ public class ApprovePromotionFragment extends Fragment {
 	 */
 
 	/*
+	 * Progress Dialog init
+	 */
+
+	private void initProgressDialog() {
+		progressDialog = new ProgressDialog(getActivity());
+		progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		progressDialog.setMessage("Loading");
+		progressDialog.setIndeterminate(true);
+		progressDialog.setCancelable(false);
+		progressDialog.show();
+	}
+
+	/*
+	 * OnClickButton
+	 */
+
+	OnClickListener approvePromotionListener = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			// get objectId
+			String objectId = mTextCode.getText().toString().trim();
+			approvePromotion(objectId);
+		}
+	};
+
+	/*
 	 * Checking Promotion
 	 */
 
-	private void approvePromotion() {
+	private void approvePromotion(String objectId) {
 		// objectID = promotionRewardnya
 		// placeId dapet dari pas tenant register
+		initProgressDialog();
 
-		String objectId = null;
 		ParseQuery<ParseObject> query = ParseQuery
 				.getQuery(ParseConstants.TABLE_ACTV_USER_CLAIM_PROMOTION);
 		query.include(ParseConstants.KEY_PROMOTION_ID);
@@ -135,9 +159,11 @@ public class ApprovePromotionFragment extends Fragment {
 						Toast.makeText(getActivity(),
 								"User already claimed this promotion",
 								Toast.LENGTH_SHORT).show();
+						progressDialog.dismiss();
 					}
 
 				} else {
+					progressDialog.dismiss();
 					errorAlertDialog(e);
 				}
 			}
@@ -147,7 +173,7 @@ public class ApprovePromotionFragment extends Fragment {
 	/*
 	 * updating user rewards
 	 */
-	
+
 	private void updateUserReward(String userId,
 			final Integer tempPromotionReward) {
 		ParseQuery<ParseObject> innerQuery = ParseQuery
@@ -157,6 +183,7 @@ public class ApprovePromotionFragment extends Fragment {
 			@Override
 			public void done(ParseObject user, ParseException e) {
 				if (e == null) {
+					progressDialog.dismiss();
 					Integer userReward = user
 							.getInt(ParseConstants.KEY_REWARD_POINT);
 					userReward = userReward + tempPromotionReward;
@@ -165,6 +192,7 @@ public class ApprovePromotionFragment extends Fragment {
 					Toast.makeText(getActivity(), "Updated user rewards",
 							Toast.LENGTH_SHORT).show();
 				} else {
+					progressDialog.dismiss();
 					errorAlertDialog(e);
 				}
 			}
