@@ -39,6 +39,14 @@
             android:name="com.example.storeinbusiness.BroadcastActivity"
             android:label="@string/title_activity_broadcast" >
         </activity>
+        <activity
+            android:name="com.example.storeinbusiness.AddPromotion"
+            android:label="@string/title_activity_add_promotion"
+            android:parentActivityName="com.example.storeinbusiness.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.storeinbusiness.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
