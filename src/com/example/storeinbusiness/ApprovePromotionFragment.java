@@ -40,9 +40,7 @@ public class ApprovePromotionFragment extends Fragment {
 	Button mDiscoverButtonReccomendation;
 
 	// Variables
-	ArrayList<HashMap<String, String>> placesInfo = new ArrayList<HashMap<String, String>>();
-	protected ArrayList<String> placesID = new ArrayList<String>();
-	HashMap<String, String> placeInfo = new HashMap<String, String>();
+	private String placeId;
 
 	// Parse Constants
 
@@ -102,11 +100,16 @@ public class ApprovePromotionFragment extends Fragment {
 	 */
 
 	private void approvePromotion() {
+		// objectID = promotionRewardnya
+		// placeId dapet dari pas tenant register
+		
 		String objectId = null;
 		ParseQuery<ParseObject> query = ParseQuery
 				.getQuery(ParseConstants.TABLE_ACTV_USER_CLAIM_PROMOTION);
 		query.include(ParseConstants.KEY_PROMOTION_ID);
 		query.include(ParseConstants.KEY_USER_ID);
+		query.include(ParseConstants.KEY_PLACE_ID);
+		
 		query.getInBackground(objectId, new GetCallback<ParseObject>() {
 
 			@Override
@@ -116,17 +119,46 @@ public class ApprovePromotionFragment extends Fragment {
 							.getParseObject(ParseConstants.KEY_USER_ID);
 					ParseObject tempPromotion = promotion
 							.getParseObject(ParseConstants.KEY_PROMOTION_ID);
+					ParseObject tempPlace = promotion.getParseObject(ParseConstants.KEY_PLACE_ID);
+
+					// get IDs
+					String userId = tempUser.getObjectId();
+					String tempPlaceId = tempPlace.getObjectId();
+					
+					// get variables
+					boolean status = promotion
+							.getBoolean(ParseConstants.KEY_IS_CLAIMED);
+					Integer promotionReward = tempPromotion
+							.getInt(ParseConstants.KEY_REWARD_POINT);
+					
+					if(placeId.equals(tempPlaceId) && )
+
 					// if is claimed is false then return false
 					// else change it to true
 
-					boolean status = promotion
-							.getBoolean(ParseConstants.KEY_IS_CLAIMED);
+					
 					if (status == false) {
 						promotion.put(ParseConstants.KEY_IS_CLAIMED, true);
 						promotion.saveInBackground();
-						Toast.makeText(getActivity(),
-								"Promotion Claimed",
+						Toast.makeText(getActivity(), "Promotion Claimed",
 								Toast.LENGTH_SHORT).show();
+
+						// Run second query for adding rewards point
+						ParseQuery<ParseObject> innerQuery = ParseQuery
+								.getQuery(ParseConstants.TABLE_USER);
+						innerQuery.getInBackground(userId,
+								new GetCallback<ParseObject>() {
+
+									@Override
+									public void done(ParseObject user,
+											ParseException e) {
+										if (e == null) {
+
+										} else {
+											errorAlertDialog(e);
+										}
+									}
+								});
 					} else {
 						Toast.makeText(getActivity(),
 								"User already claimed this promotion",
@@ -139,6 +171,10 @@ public class ApprovePromotionFragment extends Fragment {
 			}
 		});
 	}
+
+	/*
+	 * Adding reward to User
+	 */
 
 	/*
 	 * Error Dialog

@@ -1,6 +1,7 @@
 package com.example.storeinbusiness;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Date;
 import java.util.List;
 
 import android.app.Activity;
@@ -40,6 +41,12 @@ public class PromotionDetail extends Fragment {
 	public final static int REQ_CODE_PICK_IMAGE = 1;
 	String promotionTitle;
 	String promotionDesc;
+	String promotionRequirement;
+	Boolean promotionClaimable;
+	Integer promotionRewardPoint;
+	Date promotionEndDate;
+	Date promotionStartDate;
+
 	Bitmap yourSelectedImage;
 	byte[] scaledData;
 
@@ -48,8 +55,7 @@ public class PromotionDetail extends Fragment {
 	String userId = user.getObjectId();
 
 	// Intent Variables
-	protected static String itemId;
-	protected static String isLoved;
+	protected static String promotionId;
 
 	public PromotionDetail() {
 	}
@@ -64,10 +70,10 @@ public class PromotionDetail extends Fragment {
 
 		// Intent Variables
 		// Setup Variable from the previous intents
-		getItemId();
+		getPromotionId();
 
-		// Find Item Details
-		findItemDetail();
+		// Find Promotion Details
+		findPromotionDetail();
 
 		return rootView;
 	}
@@ -114,33 +120,45 @@ public class PromotionDetail extends Fragment {
 	/*
 	 * Getter for placeId variables
 	 */
-	public String getItemId() {
+	public String getPromotionId() {
 		Bundle args = getArguments();
-		itemId = args.getString(ParseConstants.KEY_OBJECT_ID);
-		return itemId;
+		promotionId = args.getString(ParseConstants.KEY_OBJECT_ID);
+		return promotionId;
 	}
 
 	/*
 	 * Find the detail of an item including description and rating
 	 */
-	public void findItemDetail() {
+	public void findPromotionDetail() {
 		// set progress bar
 		getActivity().setProgressBarIndeterminate(true);
 
 		// do the query
 		ParseQuery<ParseObject> query = ParseQuery
-				.getQuery(ParseConstants.TABLE_ITEM);
-		query.whereEqualTo(ParseConstants.KEY_OBJECT_ID, itemId);
+				.getQuery(ParseConstants.TABLE_PROMOTION);
+		query.whereEqualTo(ParseConstants.KEY_OBJECT_ID, promotionId);
 		query.getFirstInBackground(new GetCallback<ParseObject>() {
 
 			@Override
-			public void done(ParseObject item, ParseException e) {
+			public void done(ParseObject promotion, ParseException e) {
 				// set progress bar
 				getActivity().setProgressBarIndeterminate(false);
 				if (e == null) {
 					// success
-					itemTitle = item.getString(ParseConstants.KEY_NAME);
-					itemDesc = item.getString(ParseConstants.KEY_DESCRIPTION);
+					promotionTitle = promotion
+							.getString(ParseConstants.KEY_NAME);
+					promotionDesc = promotion
+							.getString(ParseConstants.KEY_DESCRIPTION);
+					promotionRequirement = promotion
+							.getString(ParseConstants.KEY_REQUIREMENT);
+					promotionStartDate = promotion
+							.getDate(ParseConstants.KEY_START_DATE);
+					promotionEndDate = promotion
+							.getDate(ParseConstants.KEY_END_DATE);
+					promotionClaimable = promotion
+							.getBoolean(ParseConstants.KEY_CLAIMABLE);
+					promotionRewardPoint = promotion
+							.getInt(ParseConstants.KEY_REWARD_POINT);
 
 				} else {
 					// failed
