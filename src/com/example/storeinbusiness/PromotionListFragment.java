@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -33,6 +34,7 @@ public class PromotionListFragment extends Fragment {
 	ArrayList<HashMap<String, String>> promotionsInfo = new ArrayList<HashMap<String, String>>();
 	protected ArrayList<String> promotionId = new ArrayList<String>();
 	HashMap<String, String> promotionInfo = new HashMap<String, String>();
+	String placeId;
 
 	// Parse Constants
 
@@ -83,7 +85,7 @@ public class PromotionListFragment extends Fragment {
 	 */
 
 	private void getItemList() {
-		String placeId = null;
+		placeId = null;
 		ParseObject currentPlace = ParseObject.createWithoutData(
 				ParseConstants.TABLE_PLACE, placeId);
 		ParseQuery<ParseObject> query = ParseQuery
@@ -138,16 +140,29 @@ public class PromotionListFragment extends Fragment {
 	 * On Click Listener
 	 */
 
+	// for editing / deleting 
 	OnItemClickListener itemListener = new OnItemClickListener() {
 
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
-			Intent intent = new Intent(getActivity(), ItemInformation.class);
+			Intent intent = new Intent(getActivity(),
+					PromotionInformation.class);
 			intent.putExtra(ParseConstants.KEY_ITEM_ID,
 					promotionId.get(position));
 			startActivity(intent);
 
+		}
+	};
+
+	// for adding new promotion
+	OnClickListener addButtonListener = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			Intent intent = new Intent(getActivity(), AddPromotion.class);
+			intent.putExtra(ParseConstants.KEY_PLACE_ID, placeId);
+			startActivity(intent);
 		}
 	};
 
