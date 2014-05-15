@@ -1,31 +1,17 @@
 package com.example.storeinbusiness;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Color;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
-import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
@@ -102,14 +88,14 @@ public class ApprovePromotionFragment extends Fragment {
 	private void approvePromotion() {
 		// objectID = promotionRewardnya
 		// placeId dapet dari pas tenant register
-		
+
 		String objectId = null;
 		ParseQuery<ParseObject> query = ParseQuery
 				.getQuery(ParseConstants.TABLE_ACTV_USER_CLAIM_PROMOTION);
 		query.include(ParseConstants.KEY_PROMOTION_ID);
 		query.include(ParseConstants.KEY_USER_ID);
 		query.include(ParseConstants.KEY_PLACE_ID);
-		
+
 		query.getInBackground(objectId, new GetCallback<ParseObject>() {
 
 			@Override
@@ -119,46 +105,32 @@ public class ApprovePromotionFragment extends Fragment {
 							.getParseObject(ParseConstants.KEY_USER_ID);
 					ParseObject tempPromotion = promotion
 							.getParseObject(ParseConstants.KEY_PROMOTION_ID);
-					ParseObject tempPlace = promotion.getParseObject(ParseConstants.KEY_PLACE_ID);
+					ParseObject tempPlace = promotion
+							.getParseObject(ParseConstants.KEY_PLACE_ID);
 
 					// get IDs
 					String userId = tempUser.getObjectId();
 					String tempPlaceId = tempPlace.getObjectId();
-					
+
 					// get variables
 					boolean status = promotion
 							.getBoolean(ParseConstants.KEY_IS_CLAIMED);
-					Integer promotionReward = tempPromotion
+					final Integer tempPromotionReward = tempPromotion
 							.getInt(ParseConstants.KEY_REWARD_POINT);
-					
-					if(placeId.equals(tempPlaceId) && )
 
 					// if is claimed is false then return false
 					// else change it to true
 
-					
-					if (status == false) {
+					if (placeId.equals(tempPlaceId) && status == false) {
 						promotion.put(ParseConstants.KEY_IS_CLAIMED, true);
 						promotion.saveInBackground();
 						Toast.makeText(getActivity(), "Promotion Claimed",
 								Toast.LENGTH_SHORT).show();
 
-						// Run second query for adding rewards point
-						ParseQuery<ParseObject> innerQuery = ParseQuery
-								.getQuery(ParseConstants.TABLE_USER);
-						innerQuery.getInBackground(userId,
-								new GetCallback<ParseObject>() {
-
-									@Override
-									public void done(ParseObject user,
-											ParseException e) {
-										if (e == null) {
-
-										} else {
-											errorAlertDialog(e);
-										}
-									}
-								});
+						/*
+						 * updating user rewards
+						 */
+						updateUserReward(userId, tempPromotionReward);
 					} else {
 						Toast.makeText(getActivity(),
 								"User already claimed this promotion",
@@ -173,8 +145,31 @@ public class ApprovePromotionFragment extends Fragment {
 	}
 
 	/*
-	 * Adding reward to User
+	 * updating user rewards
 	 */
+	
+	private void updateUserReward(String userId,
+			final Integer tempPromotionReward) {
+		ParseQuery<ParseObject> innerQuery = ParseQuery
+				.getQuery(ParseConstants.TABLE_USER);
+		innerQuery.getInBackground(userId, new GetCallback<ParseObject>() {
+
+			@Override
+			public void done(ParseObject user, ParseException e) {
+				if (e == null) {
+					Integer userReward = user
+							.getInt(ParseConstants.KEY_REWARD_POINT);
+					userReward = userReward + tempPromotionReward;
+					user.put(ParseConstants.KEY_REWARD_POINT, userReward);
+					user.saveInBackground();
+					Toast.makeText(getActivity(), "Updated user rewards",
+							Toast.LENGTH_SHORT).show();
+				} else {
+					errorAlertDialog(e);
+				}
+			}
+		});
+	}
 
 	/*
 	 * Error Dialog
