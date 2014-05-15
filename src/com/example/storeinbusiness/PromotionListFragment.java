@@ -1,6 +1,7 @@
 package com.example.storeinbusiness;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -14,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.SimpleAdapter;
 
 import com.parse.FindCallback;
@@ -24,18 +24,15 @@ import com.parse.ParseQuery;
 
 public class PromotionListFragment extends Fragment {
 
-	protected final static String TAG = PromotionListFragment.class.getSimpleName()
-			.toString();
+	protected final static String TAG = PromotionListFragment.class
+			.getSimpleName().toString();
 
 	// UI Variable
-	Button mDiscoverButtonCheckIn;
-	Button mDiscoverButtonBrowse;
-	Button mDiscoverButtonReccomendation;
 
 	// Variables
-	ArrayList<HashMap<String, String>> itemsInfo = new ArrayList<HashMap<String, String>>();
-	protected ArrayList<String> itemId = new ArrayList<String>();
-	HashMap<String, String> itemInfo = new HashMap<String, String>();
+	ArrayList<HashMap<String, String>> promotionsInfo = new ArrayList<HashMap<String, String>>();
+	protected ArrayList<String> promotionId = new ArrayList<String>();
+	HashMap<String, String> promotionInfo = new HashMap<String, String>();
 
 	// Parse Constants
 
@@ -71,8 +68,8 @@ public class PromotionListFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		View view = inflater.inflate(R.layout.fragment_top_items, container,
-				false);
+		View view = inflater.inflate(R.layout.fragment_promotion_list,
+				container, false);
 
 		return view;
 	}
@@ -90,29 +87,29 @@ public class PromotionListFragment extends Fragment {
 		ParseObject currentPlace = ParseObject.createWithoutData(
 				ParseConstants.TABLE_PLACE, placeId);
 		ParseQuery<ParseObject> query = ParseQuery
-				.getQuery(ParseConstants.TABLE_REL_PLACE_ITEM);
-		query.include(ParseConstants.KEY_ITEM_ID);
-		query.setLimit(3);
+				.getQuery(ParseConstants.TABLE_REL_PROMOTION_PLACE);
+		query.whereEqualTo(ParseConstants.KEY_PLACE_ID, currentPlace);
+		query.include(ParseConstants.KEY_PROMOTION_ID);
 		query.findInBackground(new FindCallback<ParseObject>() {
 
 			@Override
-			public void done(List<ParseObject> items, ParseException e) {
+			public void done(List<ParseObject> promotions, ParseException e) {
 				if (e == null) {
-					for (ParseObject object : items) {
-						HashMap<String, String> itemInfo = new HashMap<String, String>();
-						ParseObject currentItem = object
-								.getParseObject(ParseConstants.KEY_ITEM_ID);
-						String itemName = currentItem
+					for (ParseObject object : promotions) {
+						HashMap<String, String> promotionInfo = new HashMap<String, String>();
+						ParseObject currentPromotion = object
+								.getParseObject(ParseConstants.KEY_PROMOTION_ID);
+						String promotionName = currentPromotion
 								.getString(ParseConstants.KEY_NAME);
-						Number totalLoved = currentItem
-								.getNumber(ParseConstants.KEY_TOTAL_LOVED);
-						String temp = totalLoved.toString();
+						Date createdAt = currentPromotion.getCreatedAt();
 
-						itemInfo.put(ParseConstants.KEY_NAME, itemName);
-						itemInfo.put(ParseConstants.KEY_TOTAL_LOVED, temp);
+						promotionInfo.put(ParseConstants.KEY_NAME,
+								promotionName);
+						promotionInfo.put(ParseConstants.KEY_CREATED_AT,
+								createdAt.toString());
 
-						itemId.add(currentItem.getObjectId());
-						itemsInfo.add(itemInfo);
+						promotionId.add(currentPromotion.getObjectId());
+						promotionsInfo.add(promotionInfo);
 					}
 				} else {
 					errorAlertDialog(e);
@@ -128,11 +125,11 @@ public class PromotionListFragment extends Fragment {
 	private void setAdapter() {
 		// dismiss the progress dialog
 		String[] keys = { ParseConstants.KEY_NAME,
-				ParseConstants.KEY_TOTAL_LOVED };
+				ParseConstants.KEY_CREATED_AT };
 		int[] ids = { android.R.id.text1, android.R.id.text2 };
 
-		SimpleAdapter adapter = new SimpleAdapter(getActivity(), itemsInfo,
-				android.R.layout.simple_list_item_2, keys, ids);
+		SimpleAdapter adapter = new SimpleAdapter(getActivity(),
+				promotionsInfo, android.R.layout.simple_list_item_2, keys, ids);
 
 		// mListUsersReview.setAdapter(adapter);
 	}
@@ -147,7 +144,8 @@ public class PromotionListFragment extends Fragment {
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
 			Intent intent = new Intent(getActivity(), ItemInformation.class);
-			intent.putExtra(ParseConstants.KEY_ITEM_ID, itemId.get(position));
+			intent.putExtra(ParseConstants.KEY_ITEM_ID,
+					promotionId.get(position));
 			startActivity(intent);
 
 		}
