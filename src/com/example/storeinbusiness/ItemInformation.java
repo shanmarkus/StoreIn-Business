@@ -2,15 +2,14 @@ package com.example.storeinbusiness;
 
 import java.util.Locale;
 
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
-import android.view.Gravity;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -101,20 +100,51 @@ public class ItemInformation extends ActionBarActivity implements
 	 */
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
+		// Intent Variables
+		protected String itemId;
+
 		public SectionsPagerAdapter(FragmentManager fm) {
 			super(fm);
 		}
 
+		// Setter Getter for intents
+		public String getItemId() {
+			return itemId = getIntent().getExtras().getString(
+					ParseConstants.KEY_OBJECT_ID);
+		}
+
 		@Override
 		public Fragment getItem(int i) {
-			return null;
-			
+			if (itemId == null) {
+				getItemId();
+			}
+			Fragment fragment = new ItemDetail();
+			Bundle args = new Bundle();
+			switch (i) {
+			case 0:
+				fragment = new ItemDetail();
+				args.putString(ParseConstants.KEY_OBJECT_ID, itemId);
+				fragment.setArguments(args);
+				return fragment;
+
+				// case 1:
+				// fragment = new ItemReview();
+				// args.putString(ParseConstants.KEY_OBJECT_ID, itemId);
+				// fragment.setArguments(args);
+				// return fragment;
+
+			default:
+				fragment = new ItemDetail();
+				args.putString(ParseConstants.KEY_OBJECT_ID, itemId);
+				fragment.setArguments(args);
+				return fragment;
+			}
 		}
 
 		@Override
 		public int getCount() {
-			// Show 3 total pages.
-			return 3;
+			// Show 2 total pages.
+			return 2;
 		}
 
 		@Override
@@ -134,15 +164,9 @@ public class ItemInformation extends ActionBarActivity implements
 	 * A placeholder fragment containing a simple view.
 	 */
 	public static class PlaceholderFragment extends Fragment {
-		/**
-		 * The fragment argument representing the section number for this
-		 * fragment.
-		 */
+
 		private static final String ARG_SECTION_NUMBER = "section_number";
 
-		/**
-		 * Returns a new instance of this fragment for the given section number.
-		 */
 		public static PlaceholderFragment newInstance(int sectionNumber) {
 			PlaceholderFragment fragment = new PlaceholderFragment();
 			Bundle args = new Bundle();
