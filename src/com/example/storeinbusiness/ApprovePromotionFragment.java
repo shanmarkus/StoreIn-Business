@@ -69,17 +69,32 @@ public class ApprovePromotionFragment extends Fragment {
 		View view = inflater.inflate(R.layout.fragment_approve_promotion,
 				container, false);
 
+		// get PlaceId
+		getPlaceId();
+		Toast.makeText(getActivity(), placeId, Toast.LENGTH_SHORT).show();
 		// Declare UI
 		mApprovePromotionalText = (EditText) view
 				.findViewById(R.id.approvePromotionalText);
 		mApproveButton = (Button) view.findViewById(R.id.approveButton);
+
+		// set on click listener
 		mApproveButton.setOnClickListener(approvePromotionListener);
+
 		return view;
 	}
 
 	/*
 	 * Function Added
 	 */
+
+	/*
+	 * Getter for placeId variables
+	 */
+	public String getPlaceId() {
+		Bundle args = getArguments();
+		placeId = args.getString(ParseConstants.KEY_PLACE_ID);
+		return placeId;
+	}
 
 	/*
 	 * Progress Dialog init
@@ -145,7 +160,8 @@ public class ApprovePromotionFragment extends Fragment {
 							.getBoolean(ParseConstants.KEY_IS_CLAIMED);
 					final Integer tempPromotionReward = tempPromotion
 							.getInt(ParseConstants.KEY_REWARD_POINT);
-
+					placeId = getPlaceId();
+					
 					// if is claimed is false then return false
 					// else change it to true
 

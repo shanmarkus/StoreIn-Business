@@ -56,7 +56,10 @@ public class MainActivity extends ActionBarActivity implements
 
 	@Override
 	public void onNavigationDrawerItemSelected(int position) {
-
+		placeId = this.getIntent().getStringExtra(ParseConstants.KEY_PLACE_ID);
+		if (placeId == null) {
+			navigateToLogin();
+		}
 		Fragment fragment = new ApprovePromotionFragment();
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		Bundle args = new Bundle();
@@ -66,7 +69,7 @@ public class MainActivity extends ActionBarActivity implements
 			args.putString(ParseConstants.KEY_PLACE_ID, placeId);
 			fragment.setArguments(args);
 			break;
-			
+
 		// case 1:
 		// fragment = new HomeFragment();
 		// break;
