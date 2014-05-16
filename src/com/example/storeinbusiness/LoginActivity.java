@@ -80,6 +80,7 @@ public class LoginActivity extends ActionBarActivity {
 			mPasswordField = (EditText) rootView
 					.findViewById(R.id.passwordField);
 			mLoginButton = (Button) rootView.findViewById(R.id.loginButton);
+			mLoginButton.setOnClickListener(loginButtonListener);
 			return rootView;
 		}
 

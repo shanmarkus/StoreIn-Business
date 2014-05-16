@@ -17,24 +17,22 @@
         android:layout_alignParentTop="true"
         android:ems="10"
         android:hint="Username"
-        android:singleLine="true"
-        android:textColor="@android:color/white" >
+        android:singleLine="true" >
 
         <requestFocus />
     </EditText>
 
     <EditText
-        android:layout_marginTop="20dp"
         android:id="@+id/passwordField"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/usernameField"
         android:layout_below="@+id/usernameField"
+        android:layout_marginTop="20dp"
         android:ems="10"
         android:hint="Password"
         android:inputType="textPassword"
-        android:singleLine="true"
-        android:textColor="@android:color/white" />
+        android:singleLine="true" />
 
     <Button
         android:id="@+id/loginButton"

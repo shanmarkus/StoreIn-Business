@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parse.ParseAnalytics;
 import com.parse.ParseUser;
@@ -34,12 +35,14 @@ public class MainActivity extends ActionBarActivity implements
 		setContentView(R.layout.activity_main);
 
 		ParseAnalytics.trackAppOpened(getIntent());
-		ParseUser currentUser = ParseUser.getCurrentUser();
 
-		if (currentUser == null) {
+		String placeId = this.getIntent().getStringExtra(
+				ParseConstants.KEY_PLACE_ID);
+		Toast.makeText(this, placeId , Toast.LENGTH_SHORT).show();
+		if (placeId == null) {
 			navigateToLogin();
 		} else {
-			Log.i(TAG, currentUser.getUsername());
+			Log.i(TAG, "error place id == null");
 		}
 
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
