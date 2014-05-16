@@ -24,6 +24,9 @@ public class MainActivity extends ActionBarActivity implements
 
 	private static final String TAG = MainActivity.class.getSimpleName();
 
+	// Fixed Variables
+	private String placeId;
+
 	private NavigationDrawerFragment mNavigationDrawerFragment;
 
 	private CharSequence mTitle;
@@ -35,9 +38,7 @@ public class MainActivity extends ActionBarActivity implements
 
 		ParseAnalytics.trackAppOpened(getIntent());
 
-		String placeId = this.getIntent().getStringExtra(
-				ParseConstants.KEY_PLACE_ID);
-		Toast.makeText(this, placeId, Toast.LENGTH_SHORT).show();
+		placeId = this.getIntent().getStringExtra(ParseConstants.KEY_PLACE_ID);
 		if (placeId == null) {
 			navigateToLogin();
 		} else {
@@ -55,13 +56,17 @@ public class MainActivity extends ActionBarActivity implements
 
 	@Override
 	public void onNavigationDrawerItemSelected(int position) {
-		// update the main content by replacing fragments
+
 		Fragment fragment = new ApprovePromotionFragment();
 		FragmentManager fragmentManager = getSupportFragmentManager();
+		Bundle args = new Bundle();
 		switch (position) {
 		case 0:
 			fragment = new ApprovePromotionFragment();
+			args.putString(ParseConstants.KEY_PLACE_ID, placeId);
+			fragment.setArguments(args);
 			break;
+			
 		// case 1:
 		// fragment = new HomeFragment();
 		// break;

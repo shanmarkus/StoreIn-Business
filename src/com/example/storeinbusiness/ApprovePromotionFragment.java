@@ -24,8 +24,8 @@ public class ApprovePromotionFragment extends Fragment {
 			.getSimpleName().toString();
 
 	// UI Variable
-	EditText mTextCode;
-	Button mClaimeButton;
+	EditText mApprovePromotionalText;
+	Button mApproveButton;
 
 	// Variables
 	private String placeId;
@@ -70,7 +70,10 @@ public class ApprovePromotionFragment extends Fragment {
 				container, false);
 
 		// Declare UI
-
+		mApprovePromotionalText = (EditText) view
+				.findViewById(R.id.approvePromotionalText);
+		mApproveButton = (Button) view.findViewById(R.id.approveButton);
+		mApproveButton.setOnClickListener(approvePromotionListener);
 		return view;
 	}
 
@@ -100,7 +103,8 @@ public class ApprovePromotionFragment extends Fragment {
 		@Override
 		public void onClick(View v) {
 			// get objectId
-			String objectId = mTextCode.getText().toString().trim();
+			String objectId = mApprovePromotionalText.getText().toString()
+					.trim();
 			approvePromotion(objectId);
 		}
 	};
