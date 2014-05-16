@@ -18,7 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.ParseAnalytics;
-import com.parse.ParseUser;
 
 public class MainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -38,7 +37,7 @@ public class MainActivity extends ActionBarActivity implements
 
 		String placeId = this.getIntent().getStringExtra(
 				ParseConstants.KEY_PLACE_ID);
-		Toast.makeText(this, placeId , Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, placeId, Toast.LENGTH_SHORT).show();
 		if (placeId == null) {
 			navigateToLogin();
 		} else {
@@ -57,11 +56,25 @@ public class MainActivity extends ActionBarActivity implements
 	@Override
 	public void onNavigationDrawerItemSelected(int position) {
 		// update the main content by replacing fragments
+		Fragment fragment = new ApprovePromotionFragment();
 		FragmentManager fragmentManager = getSupportFragmentManager();
-		fragmentManager
-				.beginTransaction()
-				.replace(R.id.container,
-						PlaceholderFragment.newInstance(position + 1)).commit();
+		switch (position) {
+		case 0:
+			fragment = new ApprovePromotionFragment();
+			break;
+		// case 1:
+		// fragment = new HomeFragment();
+		// break;
+		// case 2:
+		// fragment = new FriendInformation();
+		// break;
+		// case 3:
+		// fragment = new UpdatesFragment();
+		// break;
+		}
+
+		fragmentManager.beginTransaction().replace(R.id.container, fragment)
+				.commit();
 	}
 
 	public void onSectionAttached(int number) {
