@@ -85,6 +85,16 @@ public class TopItemsFragment extends Fragment {
 	 */
 
 	/*
+	 * Clear Arraylist
+	 */
+
+	private void clearArray() {
+		itemsInfo.clear();
+		itemInfo.clear();
+		itemId.clear();
+	}
+
+	/*
 	 * Getter for placeId variables
 	 */
 	public String getPlaceId() {
@@ -101,6 +111,9 @@ public class TopItemsFragment extends Fragment {
 		if (placeId == null) {
 			getPlaceId();
 		}
+		// clear arraylist
+		clearArray();
+		
 		ParseObject currentPlace = ParseObject.createWithoutData(
 				ParseConstants.TABLE_PLACE, placeId);
 		ParseQuery<ParseObject> query = ParseQuery
