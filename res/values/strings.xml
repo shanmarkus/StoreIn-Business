@@ -24,5 +24,6 @@
     <string name="item_detail_edit_button">Edit Items</string>
     <string name="item_detail_delete_item">Delete Item</string>
     <string name="item_detail_upload_button">Upload Image</string>
+    <string name="item_detail_get_image">Get Image</string>
 
 </resources>

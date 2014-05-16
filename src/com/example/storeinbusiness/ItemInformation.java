@@ -110,7 +110,7 @@ public class ItemInformation extends ActionBarActivity implements
 		// Setter Getter for intents
 		public String getItemId() {
 			return itemId = getIntent().getExtras().getString(
-					ParseConstants.KEY_OBJECT_ID);
+					ParseConstants.KEY_ITEM_ID);
 		}
 
 		@Override
@@ -123,7 +123,7 @@ public class ItemInformation extends ActionBarActivity implements
 			switch (i) {
 			case 0:
 				fragment = new ItemDetail();
-				args.putString(ParseConstants.KEY_OBJECT_ID, itemId);
+				args.putString(ParseConstants.KEY_ITEM_ID, itemId);
 				fragment.setArguments(args);
 				return fragment;
 
