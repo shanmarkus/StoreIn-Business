@@ -29,10 +29,10 @@
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
     <permission
-        android:name="com.example.storein.permission.C2D_MESSAGE"
+        android:name="com.example.storeinbusiness.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="com.example.storein.permission.C2D_MESSAGE" />
+    <uses-permission android:name="com.example.storeinbusiness.permission.C2D_MESSAGE" />
 
     <application
         android:name="com.example.storeinbusiness.StoreInBusinessApplication"
@@ -90,7 +90,7 @@
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
 
-                <category android:name="com.example.storein" />
+                <category android:name="com.example.storeinbusiness" />
             </intent-filter>
         </receiver>
         

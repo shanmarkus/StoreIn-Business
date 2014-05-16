@@ -122,32 +122,46 @@ public class LoginActivity extends ActionBarActivity {
 					AlertDialog dialog = builder.create();
 					dialog.show();
 				} else {
-					// Login
-					ParseQuery<ParseObject> query = ParseQuery
-							.getQuery(ParseConstants.TABLE_TENANT);
-					query.whereEqualTo(ParseConstants.KEY_USERNAME, username);
-					query.whereEqualTo(ParseConstants.KEY_PASSWORD, password);
-					query.include(ParseConstants.KEY_PLACE_ID);
-					query.getFirstInBackground(new GetCallback<ParseObject>() {
+					ParseUser.logInInBackground(username, password,
+							new LogInCallback() {
 
-						@Override
-						public void done(ParseObject tenant, ParseException e) {
-							if (e == null) {
-								if (tenant.isDataAvailable() == true) {
-									ParseObject place = tenant
-											.getParseObject(ParseConstants.KEY_PLACE_ID);
-									String currentPlaceId = place.getObjectId();
-									navigateToMainActivity(currentPlaceId);
-								} else {
-									Toast.makeText(getActivity(),
-											"sorry you dont have account yet",
-											Toast.LENGTH_SHORT).show();
+								@Override
+								public void done(ParseUser user,
+										ParseException e) {
+									if (e == null) {
+										String currentUserId = user
+												.getObjectId();
+										ParseQuery<ParseObject> innerQuery = ParseQuery
+												.getQuery(ParseConstants.TABLE_REL_TENANT_PLACE);
+										innerQuery.whereEqualTo(
+												ParseConstants.KEY_USER_ID,
+												currentUserId);
+										innerQuery
+												.include(ParseConstants.KEY_PLACE_ID);
+										innerQuery
+												.getFirstInBackground(new GetCallback<ParseObject>() {
+
+													@Override
+													public void done(
+															ParseObject tenant,
+															ParseException e) {
+														if (e == null) {
+															ParseObject currentTenant = tenant
+																	.getParseObject(ParseConstants.KEY_PLACE_ID);
+															String placeId = currentTenant
+																	.getObjectId();
+															navigateToMainActivity(placeId);
+														} else {
+															errorAlertDialog(e);
+														}
+													}
+												});
+
+									} else {
+										errorAlertDialog(e);
+									}
 								}
-							} else {
-								errorAlertDialog(e);
-							}
-						}
-					});
+							});
 				}
 
 			}

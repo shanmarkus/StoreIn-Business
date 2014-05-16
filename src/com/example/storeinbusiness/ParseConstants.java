@@ -22,6 +22,7 @@ public final class ParseConstants {
 	public static final String TABLE_REL_PLACE_ITEM = "Rel_Place_Item";
 	public static final String TABLE_REL_PROMOTION_PLACE = "Rel_Promotion_Place";
 	public static final String TABLE_REL_USER_USER = "Rel_User_User";
+	public static final String TABLE_REL_TENANT_PLACE ="Rel_Tenant_Place";
 
 	// Field names
 	public static final String KEY_USERNAME = "username";

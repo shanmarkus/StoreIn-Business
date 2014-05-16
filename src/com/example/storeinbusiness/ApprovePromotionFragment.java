@@ -17,6 +17,7 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 public class ApprovePromotionFragment extends Fragment {
 
@@ -161,7 +162,7 @@ public class ApprovePromotionFragment extends Fragment {
 					final Integer tempPromotionReward = tempPromotion
 							.getInt(ParseConstants.KEY_REWARD_POINT);
 					placeId = getPlaceId();
-					
+
 					// if is claimed is false then return false
 					// else change it to true
 
@@ -175,6 +176,7 @@ public class ApprovePromotionFragment extends Fragment {
 						 * updating user rewards
 						 */
 						updateUserReward(userId, tempPromotionReward);
+
 					} else {
 						Toast.makeText(getActivity(),
 								"User already claimed this promotion",
@@ -196,21 +198,30 @@ public class ApprovePromotionFragment extends Fragment {
 
 	private void updateUserReward(String userId,
 			final Integer tempPromotionReward) {
-		ParseQuery<ParseObject> innerQuery = ParseQuery
-				.getQuery(ParseConstants.TABLE_USER);
-		innerQuery.getInBackground(userId, new GetCallback<ParseObject>() {
+		ParseQuery<ParseUser> innerQuery = ParseUser.getQuery();
+		innerQuery.getInBackground(userId, new GetCallback<ParseUser>() {
 
 			@Override
-			public void done(ParseObject user, ParseException e) {
+			public void done(ParseUser user, ParseException e) {
 				if (e == null) {
-					progressDialog.dismiss();
+					
+					Toast.makeText(getActivity(), user.getObjectId(),
+							Toast.LENGTH_SHORT).show();
+					Toast.makeText(getActivity(), user.getUsername(),
+							Toast.LENGTH_SHORT).show();
+
 					Integer userReward = user
 							.getInt(ParseConstants.KEY_REWARD_POINT);
 					userReward = userReward + tempPromotionReward;
-					user.put(ParseConstants.KEY_REWARD_POINT, userReward);
-					user.saveInBackground();
-					Toast.makeText(getActivity(), "Updated user rewards",
-							Toast.LENGTH_SHORT).show();
+					user.put(ParseConstants.KEY_REWARD_POINT, 1000);
+					user.setUsername("hehehe");
+					try {
+						user.save();
+					} catch (ParseException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					progressDialog.dismiss();
 				} else {
 					progressDialog.dismiss();
 					errorAlertDialog(e);
