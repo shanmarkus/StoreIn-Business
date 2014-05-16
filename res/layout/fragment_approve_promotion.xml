@@ -5,13 +5,19 @@
     tools:context="com.example.storeinbusiness.MainActivity" >
 
     <EditText
-        android:id="@+id/editText1"
+        android:id="@+id/approvePromotionalText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textView1"
+        android:inputType="text"
+        android:singleLine="true"
+        android:hint="promotional code"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="32dp"
-        android:ems="10" />
+        android:ems="10" >
+
+        <requestFocus />
+    </EditText>
 
     <TextView
         android:id="@+id/textView1"
@@ -20,16 +26,16 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="36dp"
-        android:text="Medium Text"
+        android:text="@string/approve_promotion_title_promotion"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <Button
         android:id="@+id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/editText1"
+        android:layout_below="@+id/approvePromotionalText"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="51dp"
-        android:text="Button" />
+        android:text="@string/approve_approve_promotion" />
 
 </RelativeLayout>
