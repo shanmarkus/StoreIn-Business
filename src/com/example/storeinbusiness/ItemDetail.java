@@ -224,6 +224,7 @@ public class ItemDetail extends Fragment {
 
 	private void removeAllLoved() {
 		String itemId = getItemId();
+		removeRelation();
 		ParseQuery<ParseObject> query = ParseQuery
 				.getQuery(ParseConstants.TABLE_ITEM_LOVED);
 		query.whereEqualTo(ParseConstants.KEY_ITEM_ID, itemId);
@@ -235,6 +236,30 @@ public class ItemDetail extends Fragment {
 					for (ParseObject love : loves) {
 						love.deleteInBackground();
 					}
+				} else {
+					parseErrorDialog(e);
+				}
+			}
+		});
+	}
+
+	/*
+	 * remove relation
+	 */
+
+	private void removeRelation() {
+		String itemId = getItemId();
+		ParseObject currentItem = ParseObject.createWithoutData(
+				ParseConstants.TABLE_ITEM, itemId);
+		ParseQuery<ParseObject> query = ParseQuery
+				.getQuery(ParseConstants.TABLE_REL_PLACE_ITEM);
+		query.whereEqualTo(ParseConstants.KEY_ITEM_ID, currentItem);
+		query.getFirstInBackground(new GetCallback<ParseObject>() {
+
+			@Override
+			public void done(ParseObject item, ParseException e) {
+				if (e == null) {
+					item.deleteInBackground();
 				} else {
 					parseErrorDialog(e);
 				}
