@@ -25,5 +25,7 @@
     <string name="item_detail_delete_item">Delete Item</string>
     <string name="item_detail_upload_button">Upload Image</string>
     <string name="item_detail_get_image">Get Image</string>
+    <string name="top_items_add_button">Add Items</string>
+    <string name="title_activity_add_item">AddItem</string>
 
 </resources>

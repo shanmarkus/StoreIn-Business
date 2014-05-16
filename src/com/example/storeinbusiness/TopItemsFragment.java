@@ -11,9 +11,11 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
@@ -29,6 +31,7 @@ public class TopItemsFragment extends Fragment {
 
 	// UI Variable
 	ListView mListTopItems;
+	Button mTopItemsAddButton;
 
 	// Variables
 	ArrayList<HashMap<String, String>> itemsInfo = new ArrayList<HashMap<String, String>>();
@@ -75,6 +78,7 @@ public class TopItemsFragment extends Fragment {
 		View view = inflater.inflate(R.layout.fragment_top_items, container,
 				false);
 		// Initial the UI
+		mTopItemsAddButton = (Button) view.findViewById(R.id.topItemsAddButton);
 		mListTopItems = (ListView) view.findViewById(R.id.listTopItems);
 		mListTopItems.setOnItemClickListener(itemListener);
 		return view;
@@ -113,7 +117,7 @@ public class TopItemsFragment extends Fragment {
 		}
 		// clear arraylist
 		clearArray();
-		
+
 		ParseObject currentPlace = ParseObject.createWithoutData(
 				ParseConstants.TABLE_PLACE, placeId);
 		ParseQuery<ParseObject> query = ParseQuery
@@ -176,6 +180,17 @@ public class TopItemsFragment extends Fragment {
 				long id) {
 			Intent intent = new Intent(getActivity(), ItemInformation.class);
 			intent.putExtra(ParseConstants.KEY_ITEM_ID, itemId.get(position));
+			startActivity(intent);
+
+		}
+	};
+
+	OnClickListener addItemListener = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			Intent intent = new Intent(getActivity(), AddItem.class);
+			intent.putExtra(ParseConstants.KEY_PLACE_ID, placeId);
 			startActivity(intent);
 
 		}
