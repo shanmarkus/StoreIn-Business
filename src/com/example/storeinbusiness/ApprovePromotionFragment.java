@@ -17,7 +17,6 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
 public class ApprovePromotionFragment extends Fragment {
 
@@ -198,32 +197,25 @@ public class ApprovePromotionFragment extends Fragment {
 
 	private void updateUserReward(String userId,
 			final Integer tempPromotionReward) {
-		ParseQuery<ParseUser> innerQuery = ParseUser.getQuery();
-		innerQuery.getInBackground(userId, new GetCallback<ParseUser>() {
+		ParseObject currentUser = ParseObject.createWithoutData(
+				ParseConstants.TABLE_USER, userId);
+		ParseQuery<ParseObject> query = ParseQuery
+				.getQuery(ParseConstants.TABLE_REL_USER_REWARD);
+		query.whereEqualTo(ParseConstants.KEY_USER_ID, currentUser);
+		query.getFirstInBackground(new GetCallback<ParseObject>() {
 
 			@Override
-			public void done(ParseUser user, ParseException e) {
+			public void done(ParseObject object, ParseException e) {
 				if (e == null) {
-					
-					Toast.makeText(getActivity(), user.getObjectId(),
-							Toast.LENGTH_SHORT).show();
-					Toast.makeText(getActivity(), user.getUsername(),
-							Toast.LENGTH_SHORT).show();
-
-					Integer userReward = user
+					Integer currentReward = object
 							.getInt(ParseConstants.KEY_REWARD_POINT);
-					userReward = userReward + tempPromotionReward;
-					user.put(ParseConstants.KEY_REWARD_POINT, 1000);
-					user.setUsername("hehehe");
-					try {
-						user.save();
-					} catch (ParseException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+					currentReward = currentReward + tempPromotionReward;
+					object.put(ParseConstants.KEY_REWARD_POINT, currentReward);
+					object.saveInBackground();
 					progressDialog.dismiss();
+					Toast.makeText(getActivity(), "Reward Updated",
+							Toast.LENGTH_SHORT).show();
 				} else {
-					progressDialog.dismiss();
 					errorAlertDialog(e);
 				}
 			}

@@ -16,11 +16,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.parse.GetCallback;
-import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
 public class LoginActivity extends ActionBarActivity {
 
@@ -122,46 +120,34 @@ public class LoginActivity extends ActionBarActivity {
 					AlertDialog dialog = builder.create();
 					dialog.show();
 				} else {
-					ParseUser.logInInBackground(username, password,
-							new LogInCallback() {
+					ParseQuery<ParseObject> query = ParseQuery
+							.getQuery(ParseConstants.TABLE_TENANT);
+					query.whereEqualTo(ParseConstants.KEY_USERNAME, username);
+					query.whereEqualTo(ParseConstants.KEY_PASSWORD, password);
+					query.include(ParseConstants.KEY_PLACE_ID);
+					query.getFirstInBackground(new GetCallback<ParseObject>() {
 
-								@Override
-								public void done(ParseUser user,
-										ParseException e) {
-									if (e == null) {
-										String currentUserId = user
-												.getObjectId();
-										ParseQuery<ParseObject> innerQuery = ParseQuery
-												.getQuery(ParseConstants.TABLE_REL_TENANT_PLACE);
-										innerQuery.whereEqualTo(
-												ParseConstants.KEY_USER_ID,
-												currentUserId);
-										innerQuery
-												.include(ParseConstants.KEY_PLACE_ID);
-										innerQuery
-												.getFirstInBackground(new GetCallback<ParseObject>() {
-
-													@Override
-													public void done(
-															ParseObject tenant,
-															ParseException e) {
-														if (e == null) {
-															ParseObject currentTenant = tenant
-																	.getParseObject(ParseConstants.KEY_PLACE_ID);
-															String placeId = currentTenant
-																	.getObjectId();
-															navigateToMainActivity(placeId);
-														} else {
-															errorAlertDialog(e);
-														}
-													}
-												});
-
-									} else {
-										errorAlertDialog(e);
-									}
+						@Override
+						public void done(ParseObject object, ParseException e) {
+							if (e == null) {
+								if (object.isDataAvailable()) {
+									ParseObject currentPlace = object
+											.getParseObject(ParseConstants.KEY_PLACE_ID);
+									String placeId = currentPlace.getObjectId();
+									navigateToMainActivity(placeId);
+								} else {
+									Toast.makeText(getActivity(),
+											"User not available",
+											Toast.LENGTH_SHORT).show();
 								}
-							});
+							} else {
+								Toast.makeText(getActivity(),
+										"User not available",
+										Toast.LENGTH_SHORT).show();
+								errorAlertDialog(e);
+							}
+						}
+					});
 				}
 
 			}

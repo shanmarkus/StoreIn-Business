@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.parse.ParseAnalytics;
-import com.parse.ParseUser;
 
 public class MainActivity extends ActionBarActivity implements
 		NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -43,14 +42,6 @@ public class MainActivity extends ActionBarActivity implements
 			navigateToLogin();
 		} else {
 			Log.i(TAG, "error place id == null");
-		}
-
-		ParseUser currentUser = ParseUser.getCurrentUser();
-
-		if (currentUser == null) {
-			navigateToLogin();
-		} else {
-			Log.i(TAG, currentUser.getUsername());
 		}
 
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
