@@ -13,9 +13,13 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.parse.GetCallback;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 public class LoginActivity extends ActionBarActivity {
@@ -59,6 +63,9 @@ public class LoginActivity extends ActionBarActivity {
 		EditText mUserNameField;
 		EditText mPasswordField;
 
+		// Variables
+		String placeId;
+
 		public PlaceholderFragment() {
 		}
 
@@ -84,11 +91,11 @@ public class LoginActivity extends ActionBarActivity {
 		 * Navigate to main Activity function
 		 */
 
-		private void navigateToMainActivity() {
-
+		private void navigateToMainActivity(String placeId) {
 			Intent intent = new Intent(getActivity(), MainActivity.class);
 			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+			intent.putExtra(ParseConstants.KEY_PLACE_ID, placeId);
 			startActivity(intent);
 		}
 
@@ -115,19 +122,31 @@ public class LoginActivity extends ActionBarActivity {
 					dialog.show();
 				} else {
 					// Login
-					ParseUser.logInInBackground(username, password,
-							new LogInCallback() {
+					ParseQuery<ParseObject> query = ParseQuery
+							.getQuery(ParseConstants.TABLE_TENANT);
+					query.whereEqualTo(ParseConstants.KEY_USERNAME, username);
+					query.whereEqualTo(ParseConstants.KEY_PASSWORD, password);
+					query.include(ParseConstants.KEY_PLACE_ID);
+					query.getFirstInBackground(new GetCallback<ParseObject>() {
 
-								@Override
-								public void done(ParseUser user,
-										ParseException e) {
-									if (e == null) {
-										navigateToMainActivity();
-									} else {
-										errorAlertDialog(e);
-									}
+						@Override
+						public void done(ParseObject tenant, ParseException e) {
+							if (e == null) {
+								if (tenant.isDataAvailable() == true) {
+									ParseObject place = tenant
+											.getParseObject(ParseConstants.KEY_PLACE_ID);
+									String currentPlaceId = place.getObjectId();
+									navigateToMainActivity(currentPlaceId);
+								} else {
+									Toast.makeText(getActivity(),
+											"sorry you dont have account yet",
+											Toast.LENGTH_SHORT).show();
 								}
-							});
+							} else {
+								errorAlertDialog(e);
+							}
+						}
+					});
 				}
 
 			}

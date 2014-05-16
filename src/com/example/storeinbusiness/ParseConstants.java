@@ -11,6 +11,8 @@ public final class ParseConstants {
 	public static final String TABLE_PROMOTION = "Promotion";
 	public static final String TABLE_PROMOTION_CATEGORY = "PromotionCategory";
 	public static final String TABLE_PROMOTION_QUOTA = "PromotionQuota";
+	
+	public static final String TABLE_TENANT ="Tenant";
 
 	// User Activity class
 	public static final String TABLE_ACTV_USER_CLAIM_PROMOTION = "Activity_User_Claim_Promotion";
@@ -23,6 +25,7 @@ public final class ParseConstants {
 
 	// Field names
 	public static final String KEY_USERNAME = "username";
+	public static final String KEY_PASSWORD = "password";
 	public static final String KEY_LOCATION = "location";
 	public static final String KEY_NAME = "name";
 	public static final String KEY_ADDRESS = "address";
