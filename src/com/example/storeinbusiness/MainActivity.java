@@ -59,17 +59,19 @@ public class MainActivity extends ActionBarActivity implements
 		if (placeId == null) {
 			navigateToLogin();
 		}
-		Fragment fragment = new ApprovePromotionFragment();
+		Fragment fragment = null;
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		Bundle args = new Bundle();
 		switch (position) {
-//		case 0:
-//			fragment = new ApprovePromotionFragment();
-//			args.putString(ParseConstants.KEY_PLACE_ID, placeId);
-//			fragment.setArguments(args);
-//			break;
-
 		case 0:
+			fragment = new ApprovePromotionFragment();
+			args.putString(ParseConstants.KEY_PLACE_ID, placeId);
+			fragment.setArguments(args);
+			fragmentManager.beginTransaction()
+					.replace(R.id.container, fragment).commit();
+			break;
+
+		case 2:
 			Intent intent = new Intent(this, BroadcastActivity.class);
 			intent.putExtra(ParseConstants.KEY_PLACE_ID, placeId);
 			startActivity(intent);
@@ -82,9 +84,6 @@ public class MainActivity extends ActionBarActivity implements
 		// fragment = new UpdatesFragment();
 		// break;
 		}
-
-		fragmentManager.beginTransaction().replace(R.id.container, fragment)
-				.commit();
 	}
 
 	public void onSectionAttached(int number) {

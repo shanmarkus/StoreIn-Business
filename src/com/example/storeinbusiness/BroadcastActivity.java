@@ -156,6 +156,7 @@ public class BroadcastActivity extends ActionBarActivity {
 						Toast.makeText(getActivity(),
 								"Send messasge successfully",
 								Toast.LENGTH_SHORT).show();
+						mBroadcastEditTextMessage.setText("");
 					} else {
 						parseErrorDialog(e);
 					}
