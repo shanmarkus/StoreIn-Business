@@ -21,5 +21,8 @@
     <string name="approve_approve_promotion">Approve Code</string>
     <string name="broadcast_title_broadcast">Broadcast Message</string>
     <string name="broadcast_button">Send Broadcast</string>
+    <string name="item_detail_edit_button">Edit Items</string>
+    <string name="item_detail_delete_item">Delete Item</string>
+    <string name="item_detail_upload_button">Upload Image</string>
 
 </resources>

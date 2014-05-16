@@ -18,13 +18,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
-import com.parse.ParseImageView;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -33,7 +34,12 @@ public class ItemDetail extends Fragment {
 	private static final String TAG = ItemDetail.class.getSimpleName();
 
 	// UI Variable Declaration
-	ParseImageView mImageView;
+
+	EditText mItemDetailNameText;
+	EditText mItemDetailDescriptionEditText;
+	Button mItemDetailEditButton;
+	Button mItemDetailDeleteButton;
+	Button mItemDetailUploadImage;
 
 	// Fixed Variables
 	private Integer totalLoved;
@@ -61,6 +67,22 @@ public class ItemDetail extends Fragment {
 				container, false);
 
 		// Declare UI Variables
+		mItemDetailNameText = (EditText) rootView
+				.findViewById(R.id.itemDetailNameText);
+		mItemDetailDescriptionEditText = (EditText) rootView
+				.findViewById(R.id.itemDetailDescriptionEditText);
+		mItemDetailEditButton = (Button) rootView
+				.findViewById(R.id.itemDetailEditButton);
+		mItemDetailDeleteButton = (Button) rootView
+				.findViewById(R.id.itemDetailDeleteButton);
+		mItemDetailUploadImage = (Button) rootView
+				.findViewById(R.id.itemDetailUploadImage);
+
+		// set on click listener
+
+		mItemDetailEditButton.setOnClickListener(updateImage);
+		mItemDetailUploadImage.setOnClickListener(updateImage);
+		mItemDetailDeleteButton.setOnClickListener(onDeleteButton);
 
 		// Intent Variables
 		// Setup Variable from the previous intents
@@ -125,8 +147,6 @@ public class ItemDetail extends Fragment {
 	 */
 	public void findItemDetail() {
 		// set progress bar
-		getActivity().setProgressBarIndeterminate(true);
-
 		// do the query
 		ParseQuery<ParseObject> query = ParseQuery
 				.getQuery(ParseConstants.TABLE_ITEM);
@@ -142,6 +162,8 @@ public class ItemDetail extends Fragment {
 					itemTitle = item.getString(ParseConstants.KEY_NAME);
 					itemDesc = item.getString(ParseConstants.KEY_DESCRIPTION);
 
+					mItemDetailNameText.setText(itemTitle);
+					mItemDetailDescriptionEditText.setText(itemDesc);
 				} else {
 					// failed
 					parseErrorDialog(e);
@@ -188,6 +210,30 @@ public class ItemDetail extends Fragment {
 	}
 
 	/*
+	 * remove all loved
+	 */
+
+	private void removeAllLoved() {
+		String itemId = getItemId();
+		ParseQuery<ParseObject> query = ParseQuery
+				.getQuery(ParseConstants.TABLE_ITEM_LOVED);
+		query.whereEqualTo(ParseConstants.KEY_ITEM_ID, itemId);
+		query.findInBackground(new FindCallback<ParseObject>() {
+
+			@Override
+			public void done(List<ParseObject> loves, ParseException e) {
+				if (e == null) {
+					for (ParseObject love : loves) {
+						love.deleteInBackground();
+					}
+				} else {
+					parseErrorDialog(e);
+				}
+			}
+		});
+	}
+
+	/*
 	 * update details item to the database on clickbutton
 	 */
 
@@ -203,6 +249,12 @@ public class ItemDetail extends Fragment {
 				@Override
 				public void done(ParseObject item, ParseException e) {
 					if (e == null) {
+
+						// get latest input
+						itemTitle = mItemDetailNameText.getText().toString();
+						itemDesc = mItemDetailDescriptionEditText.getText()
+								.toString();
+
 						if (item.getString(ParseConstants.KEY_NAME).equals(
 								itemTitle)) {
 							item.put(ParseConstants.KEY_NAME, itemTitle);
@@ -210,6 +262,7 @@ public class ItemDetail extends Fragment {
 							item.put(ParseConstants.KEY_RATING, 0);
 							item.put(ParseConstants.KEY_TOTAL_LOVED, 0);
 							removeAllComments();
+							removeAllLoved();
 						} else {
 							item.put(ParseConstants.KEY_DESCRIPTION, itemDesc);
 						}
@@ -228,6 +281,8 @@ public class ItemDetail extends Fragment {
 
 		@Override
 		public void onClick(View v) {
+			getImage();
+
 			String itemId = getItemId();
 			ParseQuery<ParseObject> query = ParseQuery
 					.getQuery(ParseConstants.TABLE_ITEM);
@@ -248,6 +303,29 @@ public class ItemDetail extends Fragment {
 				}
 			});
 
+		}
+	};
+
+	OnClickListener onDeleteButton = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			itemId = getItemId();
+			removeAllComments();
+			removeAllLoved();
+			ParseQuery<ParseObject> query = ParseQuery
+					.getQuery(ParseConstants.TABLE_ITEM);
+			query.getInBackground(itemId, new GetCallback<ParseObject>() {
+
+				@Override
+				public void done(ParseObject item, ParseException e) {
+					if (e == null) {
+						item.deleteInBackground();
+					} else {
+						parseErrorDialog(e);
+					}
+				}
+			});
 		}
 	};
 
