@@ -14,12 +14,14 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
+import com.parse.SendCallback;
 
 public class BroadcastActivity extends ActionBarActivity {
 	private static final String TAG = BroadcastActivity.class.getSimpleName();
@@ -146,7 +148,19 @@ public class BroadcastActivity extends ActionBarActivity {
 			ParsePush push = new ParsePush();
 			push.setChannel(placeID);
 			push.setMessage(message + "- Send by" + placeName);
-			push.sendInBackground();
+			push.sendInBackground(new SendCallback() {
+
+				@Override
+				public void done(ParseException e) {
+					if (e == null) {
+						Toast.makeText(getActivity(),
+								"Send messasge successfully",
+								Toast.LENGTH_SHORT).show();
+					} else {
+						parseErrorDialog(e);
+					}
+				}
+			});
 		}
 
 		/*
