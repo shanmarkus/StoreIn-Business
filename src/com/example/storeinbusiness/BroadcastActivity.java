@@ -12,6 +12,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -55,6 +57,10 @@ public class BroadcastActivity extends ActionBarActivity {
 	 */
 	public static class PlaceholderFragment extends Fragment {
 
+		// UI
+		Button mBroadcastButton;
+		EditText mBroadcastEditTextMessage;
+
 		// Fixed Variables
 		private String placeID;
 		private String placeName;
@@ -68,6 +74,19 @@ public class BroadcastActivity extends ActionBarActivity {
 				Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_broadcast,
 					container, false);
+			// get intent
+			getPlaceId();
+
+			// get information
+			getInformation();
+
+			// UI Declaration
+			mBroadcastEditTextMessage = (EditText) rootView
+					.findViewById(R.id.broadcastEditTextMessage);
+			mBroadcastButton = (Button) rootView
+					.findViewById(R.id.broadcastSendButton);
+			mBroadcastButton.setOnClickListener(sendButtonListener);
+
 			return rootView;
 		}
 
@@ -123,9 +142,10 @@ public class BroadcastActivity extends ActionBarActivity {
 		 */
 
 		private void sendNotification() {
+			message = mBroadcastEditTextMessage.getText().toString();
 			ParsePush push = new ParsePush();
-			push.setChannel(placeName);
-			push.setMessage("The Giants just scored! It's now 2-2 against the Mets.");
+			push.setChannel(placeID);
+			push.setMessage(message + "- Send by" + placeName);
 			push.sendInBackground();
 		}
 

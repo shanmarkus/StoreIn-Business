@@ -19,5 +19,7 @@
     <string name="title_activity_add_promotion">AddPromotion</string>
     <string name="approve_promotion_title_promotion">Enter Promotional Code:</string>
     <string name="approve_approve_promotion">Approve Code</string>
+    <string name="broadcast_title_broadcast">Broadcast Message</string>
+    <string name="broadcast_button">Send Broadcast</string>
 
 </resources>

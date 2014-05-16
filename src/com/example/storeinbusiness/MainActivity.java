@@ -63,15 +63,18 @@ public class MainActivity extends ActionBarActivity implements
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		Bundle args = new Bundle();
 		switch (position) {
+//		case 0:
+//			fragment = new ApprovePromotionFragment();
+//			args.putString(ParseConstants.KEY_PLACE_ID, placeId);
+//			fragment.setArguments(args);
+//			break;
+
 		case 0:
-			fragment = new ApprovePromotionFragment();
-			args.putString(ParseConstants.KEY_PLACE_ID, placeId);
-			fragment.setArguments(args);
+			Intent intent = new Intent(this, BroadcastActivity.class);
+			intent.putExtra(ParseConstants.KEY_PLACE_ID, placeId);
+			startActivity(intent);
 			break;
 
-		// case 1:
-		// fragment = new HomeFragment();
-		// break;
 		// case 2:
 		// fragment = new FriendInformation();
 		// break;
