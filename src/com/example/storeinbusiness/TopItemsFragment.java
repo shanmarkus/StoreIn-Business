@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
+import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import com.parse.FindCallback;
@@ -28,14 +28,14 @@ public class TopItemsFragment extends Fragment {
 			.toString();
 
 	// UI Variable
-	Button mDiscoverButtonCheckIn;
-	Button mDiscoverButtonBrowse;
-	Button mDiscoverButtonReccomendation;
+	ListView mListTopItems;
 
 	// Variables
 	ArrayList<HashMap<String, String>> itemsInfo = new ArrayList<HashMap<String, String>>();
 	protected ArrayList<String> itemId = new ArrayList<String>();
 	HashMap<String, String> itemInfo = new HashMap<String, String>();
+
+	private String placeId;
 
 	// Parse Constants
 
@@ -58,6 +58,7 @@ public class TopItemsFragment extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
+		getItemList();
 
 	}
 
@@ -73,7 +74,9 @@ public class TopItemsFragment extends Fragment {
 		// Inflate the layout for this fragment
 		View view = inflater.inflate(R.layout.fragment_top_items, container,
 				false);
-
+		// Initial the UI
+		mListTopItems = (ListView) view.findViewById(R.id.listTopItems);
+		mListTopItems.setOnItemClickListener(itemListener);
 		return view;
 	}
 
@@ -82,17 +85,28 @@ public class TopItemsFragment extends Fragment {
 	 */
 
 	/*
+	 * Getter for placeId variables
+	 */
+	public String getPlaceId() {
+		Bundle args = getArguments();
+		placeId = args.getString(ParseConstants.KEY_PLACE_ID);
+		return placeId;
+	}
+
+	/*
 	 * Checking Promotion
 	 */
 
 	private void getItemList() {
-		String placeId = null;
+		if (placeId == null) {
+			getPlaceId();
+		}
 		ParseObject currentPlace = ParseObject.createWithoutData(
 				ParseConstants.TABLE_PLACE, placeId);
 		ParseQuery<ParseObject> query = ParseQuery
 				.getQuery(ParseConstants.TABLE_REL_PLACE_ITEM);
+		query.whereEqualTo(ParseConstants.KEY_PLACE_ID, currentPlace);
 		query.include(ParseConstants.KEY_ITEM_ID);
-		query.setLimit(3);
 		query.findInBackground(new FindCallback<ParseObject>() {
 
 			@Override
@@ -114,6 +128,8 @@ public class TopItemsFragment extends Fragment {
 						itemId.add(currentItem.getObjectId());
 						itemsInfo.add(itemInfo);
 					}
+					// setting up adapter
+					setAdapter();
 				} else {
 					errorAlertDialog(e);
 				}
@@ -133,8 +149,7 @@ public class TopItemsFragment extends Fragment {
 
 		SimpleAdapter adapter = new SimpleAdapter(getActivity(), itemsInfo,
 				android.R.layout.simple_list_item_2, keys, ids);
-
-		// mListUsersReview.setAdapter(adapter);
+		mListTopItems.setAdapter(adapter);
 	}
 
 	/*

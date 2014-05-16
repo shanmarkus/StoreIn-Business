@@ -70,6 +70,14 @@ public class MainActivity extends ActionBarActivity implements
 			fragmentManager.beginTransaction()
 					.replace(R.id.container, fragment).commit();
 			break;
+		
+		case 1:
+			fragment = new TopItemsFragment();
+			args.putString(ParseConstants.KEY_PLACE_ID, placeId);
+			fragment.setArguments(args);
+			fragmentManager.beginTransaction()
+					.replace(R.id.container, fragment).commit();
+			break;
 
 		case 2:
 			Intent intent = new Intent(this, BroadcastActivity.class);
