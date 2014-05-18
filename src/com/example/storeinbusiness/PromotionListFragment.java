@@ -84,6 +84,8 @@ public class PromotionListFragment extends Fragment {
 		mPromotionListAddPromotion = (Button) rootView
 				.findViewById(R.id.promotionListAddPromotion);
 
+		mPromotionListAddPromotion.setOnClickListener(addButtonListener);
+
 		return rootView;
 	}
 

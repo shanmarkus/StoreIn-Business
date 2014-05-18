@@ -13,6 +13,8 @@ import android.os.Build;
 
 public class AddPromotion extends ActionBarActivity {
 
+	private static final String TAG = AddPromotion.class.getSimpleName();
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -34,9 +36,6 @@ public class AddPromotion extends ActionBarActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
 			return true;
@@ -48,7 +47,11 @@ public class AddPromotion extends ActionBarActivity {
 	 * A placeholder fragment containing a simple view.
 	 */
 	public static class PlaceholderFragment extends Fragment {
+		// UI Declaration 
 
+		
+		// Variables
+		
 		public PlaceholderFragment() {
 		}
 
