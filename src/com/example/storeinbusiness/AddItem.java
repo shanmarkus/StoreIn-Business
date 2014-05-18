@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -27,8 +28,9 @@ import android.widget.Toast;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
+import com.parse.ParsePush;
 import com.parse.SaveCallback;
+import com.parse.SendCallback;
 
 public class AddItem extends ActionBarActivity {
 
@@ -75,6 +77,7 @@ public class AddItem extends ActionBarActivity {
 
 		// Variables
 		private String placeId;
+		private String placeName;
 		String itemTitle;
 		String itemDesc;
 		String itemId;
@@ -92,6 +95,10 @@ public class AddItem extends ActionBarActivity {
 			View rootView = inflater.inflate(R.layout.fragment_add_item,
 					container, false);
 
+			// Get Intent Variables
+			getPlaceId();
+			getPlaceName();
+
 			// UI Declaration
 			mAddItemNameField = (EditText) rootView
 					.findViewById(R.id.addItemNameField);
@@ -101,6 +108,9 @@ public class AddItem extends ActionBarActivity {
 					.findViewById(R.id.addItemGetImageButton);
 			mAddItemSubmitButton = (Button) rootView
 					.findViewById(R.id.addItemSubmitButton);
+
+			mAddItemGetImageButton.setOnClickListener(getImageButton);
+			mAddItemSubmitButton.setOnClickListener(submitButton);
 
 			return rootView;
 		}
@@ -136,7 +146,7 @@ public class AddItem extends ActionBarActivity {
 
 					scaledData = bos.toByteArray();
 
-					image = new ParseFile(itemTitle.trim() + ".jpg", scaledData);
+					image = new ParseFile(itemTitle + ".jpg", scaledData);
 					image.saveInBackground();
 					Toast.makeText(getActivity(), "image ready",
 							Toast.LENGTH_SHORT).show();
@@ -210,12 +220,15 @@ public class AddItem extends ActionBarActivity {
 				@Override
 				public void done(ParseException e) {
 					if (e == null) {
-						Toast.makeText(getActivity(), "Save item Success",
-								Toast.LENGTH_SHORT).show();
-						Intent intent = new Intent(getActivity(),
-								MainActivity.class);
-						intent.putExtra(ParseConstants.KEY_PLACE_ID, placeId);
-						startActivity(intent);
+						AlertDialog.Builder builder = new AlertDialog.Builder(
+								getActivity());
+						String message = "Creating this " + itemTitle;
+						builder.setMessage(message)
+								.setPositiveButton("Ok", dialogAddItemListener)
+								.setNeutralButton("Share",
+										dialogAddItemListener)
+								.setNegativeButton("No", dialogAddItemListener)
+								.show();
 					} else {
 						errorAlertDialog(e);
 					}
@@ -223,12 +236,26 @@ public class AddItem extends ActionBarActivity {
 			});
 		}
 
+		private void goToMainActivity() {
+			Toast.makeText(getActivity(), "Save item Success",
+					Toast.LENGTH_SHORT).show();
+			Intent intent = new Intent(getActivity(), MainActivity.class);
+			intent.putExtra(ParseConstants.KEY_PLACE_ID, placeId);
+			startActivity(intent);
+		}
+
 		/*
-		 * Getter for placeId variables
+		 * Getter for placeId , placeName, and image variables
 		 */
 		public String getPlaceId() {
-			Bundle args = getArguments();
-			placeId = args.getString(ParseConstants.KEY_PLACE_ID);
+			Intent intent = getActivity().getIntent();
+			placeId = intent.getStringExtra(ParseConstants.KEY_PLACE_ID);
+			return placeId;
+		}
+
+		public String getPlaceName() {
+			Intent intent = getActivity().getIntent();
+			placeName = intent.getStringExtra(ParseConstants.KEY_NAME);
 			return placeId;
 		}
 
@@ -256,6 +283,50 @@ public class AddItem extends ActionBarActivity {
 			@Override
 			public void onClick(View v) {
 				createItem();
+			}
+		};
+
+		/*
+		 * Alert Dialog For Check In
+		 */
+
+		DialogInterface.OnClickListener dialogAddItemListener = new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				switch (which) {
+				case DialogInterface.BUTTON_POSITIVE:
+					goToMainActivity();
+					break;
+
+				case DialogInterface.BUTTON_NEUTRAL:
+					if (placeName == null) {
+						getPlaceName();
+					}
+					String message = "Check Out " + itemTitle;
+					ParsePush push = new ParsePush();
+					push.setChannel(placeId);
+					push.setMessage(message + "- Only Available at "
+							+ placeName);
+					push.sendInBackground(new SendCallback() {
+
+						@Override
+						public void done(ParseException e) {
+							if (e == null) {
+								Toast.makeText(getActivity(),
+										"Send messasge successfully",
+										Toast.LENGTH_SHORT).show();
+								goToMainActivity();
+							} else {
+								errorAlertDialog(e);
+							}
+						}
+					});
+					break;
+
+				case DialogInterface.BUTTON_NEGATIVE:
+					// do nothing
+					break;
+				}
 			}
 		};
 

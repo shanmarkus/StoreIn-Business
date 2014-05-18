@@ -39,6 +39,7 @@ public class TopItemsFragment extends Fragment {
 	HashMap<String, String> itemInfo = new HashMap<String, String>();
 
 	private String placeId;
+	private String placeName;
 
 	// Parse Constants
 
@@ -80,7 +81,10 @@ public class TopItemsFragment extends Fragment {
 		// Initial the UI
 		mTopItemsAddButton = (Button) view.findViewById(R.id.topItemsAddButton);
 		mListTopItems = (ListView) view.findViewById(R.id.listTopItems);
+
+		// Set on Click Listener
 		mListTopItems.setOnItemClickListener(itemListener);
+		mTopItemsAddButton.setOnClickListener(addItemListener);
 		return view;
 	}
 
@@ -124,6 +128,7 @@ public class TopItemsFragment extends Fragment {
 				.getQuery(ParseConstants.TABLE_REL_PLACE_ITEM);
 		query.whereEqualTo(ParseConstants.KEY_PLACE_ID, currentPlace);
 		query.include(ParseConstants.KEY_ITEM_ID);
+		query.include(ParseConstants.KEY_PLACE_ID);
 		query.findInBackground(new FindCallback<ParseObject>() {
 
 			@Override
@@ -133,6 +138,11 @@ public class TopItemsFragment extends Fragment {
 						HashMap<String, String> itemInfo = new HashMap<String, String>();
 						ParseObject currentItem = object
 								.getParseObject(ParseConstants.KEY_ITEM_ID);
+						ParseObject currentPlace = object
+								.getParseObject(ParseConstants.KEY_PLACE_ID);
+						placeName = currentPlace
+								.getString(ParseConstants.KEY_NAME);
+
 						String itemName = currentItem
 								.getString(ParseConstants.KEY_NAME);
 						Number totalLoved = currentItem
@@ -191,6 +201,7 @@ public class TopItemsFragment extends Fragment {
 		public void onClick(View v) {
 			Intent intent = new Intent(getActivity(), AddItem.class);
 			intent.putExtra(ParseConstants.KEY_PLACE_ID, placeId);
+			intent.putExtra(ParseConstants.KEY_NAME, placeName);
 			startActivity(intent);
 
 		}

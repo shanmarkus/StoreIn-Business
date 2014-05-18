@@ -147,7 +147,7 @@ public class BroadcastActivity extends ActionBarActivity {
 			message = mBroadcastEditTextMessage.getText().toString();
 			ParsePush push = new ParsePush();
 			push.setChannel(placeID);
-			push.setMessage(message + "- Send by" + placeName);
+			push.setMessage(message + "- Send by " + placeName);
 			push.sendInBackground(new SendCallback() {
 
 				@Override
