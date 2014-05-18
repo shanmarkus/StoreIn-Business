@@ -119,7 +119,7 @@ public class TopItemsFragment extends Fragment {
 		if (placeId == null) {
 			getPlaceId();
 		}
-		// clear arraylist
+		// clear array list
 		clearArray();
 
 		ParseObject currentPlace = ParseObject.createWithoutData(

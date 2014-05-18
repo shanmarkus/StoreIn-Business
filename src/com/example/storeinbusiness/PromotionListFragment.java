@@ -16,6 +16,8 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import com.parse.FindCallback;
@@ -29,6 +31,8 @@ public class PromotionListFragment extends Fragment {
 			.getSimpleName().toString();
 
 	// UI Variable
+	ListView mListPromotions;
+	Button mPromotionListAddPromotion;
 
 	// Variables
 	ArrayList<HashMap<String, String>> promotionsInfo = new ArrayList<HashMap<String, String>>();
@@ -56,6 +60,7 @@ public class PromotionListFragment extends Fragment {
 
 	@Override
 	public void onResume() {
+		getItemList();
 		super.onResume();
 
 	}
@@ -70,10 +75,16 @@ public class PromotionListFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		View view = inflater.inflate(R.layout.fragment_promotion_list,
+		View rootView = inflater.inflate(R.layout.fragment_promotion_list,
 				container, false);
+		getPlaceId();
 
-		return view;
+		// Declare UI Variables
+		mListPromotions = (ListView) rootView.findViewById(R.id.listPromotions);
+		mPromotionListAddPromotion = (Button) rootView
+				.findViewById(R.id.promotionListAddPromotion);
+
+		return rootView;
 	}
 
 	/*
@@ -81,11 +92,33 @@ public class PromotionListFragment extends Fragment {
 	 */
 
 	/*
+	 * Getter for placeId variables
+	 */
+	public String getPlaceId() {
+		Bundle args = getArguments();
+		placeId = args.getString(ParseConstants.KEY_PLACE_ID);
+		return placeId;
+	}
+
+	/*
+	 * Clear ArrayList
+	 */
+
+	private void clearArrayList() {
+		promotionsInfo.clear();
+		promotionInfo.clear();
+		promotionId.clear();
+	}
+
+	/*
 	 * Checking Promotion
 	 */
 
 	private void getItemList() {
-		placeId = null;
+		if (placeId == null) {
+			getPlaceId();
+		}
+		clearArrayList();
 		ParseObject currentPlace = ParseObject.createWithoutData(
 				ParseConstants.TABLE_PLACE, placeId);
 		ParseQuery<ParseObject> query = ParseQuery
@@ -113,6 +146,8 @@ public class PromotionListFragment extends Fragment {
 						promotionId.add(currentPromotion.getObjectId());
 						promotionsInfo.add(promotionInfo);
 					}
+					// Setting adapter
+					setAdapter();
 				} else {
 					errorAlertDialog(e);
 				}
@@ -133,14 +168,14 @@ public class PromotionListFragment extends Fragment {
 		SimpleAdapter adapter = new SimpleAdapter(getActivity(),
 				promotionsInfo, android.R.layout.simple_list_item_2, keys, ids);
 
-		// mListUsersReview.setAdapter(adapter);
+		mListPromotions.setAdapter(adapter);
 	}
 
 	/*
 	 * On Click Listener
 	 */
 
-	// for editing / deleting 
+	// for editing / deleting
 	OnItemClickListener itemListener = new OnItemClickListener() {
 
 		@Override
