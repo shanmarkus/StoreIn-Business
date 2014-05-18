@@ -145,6 +145,7 @@ public class AddItem extends ActionBarActivity {
 							bos);
 
 					scaledData = bos.toByteArray();
+					itemTitle = mAddItemNameField.getText().toString().trim();
 
 					image = new ParseFile(itemTitle + ".jpg", scaledData);
 					image.saveInBackground();
@@ -173,7 +174,8 @@ public class AddItem extends ActionBarActivity {
 			final ParseObject item = new ParseObject(ParseConstants.TABLE_ITEM);
 			item.put(ParseConstants.KEY_NAME, itemTitle);
 			item.put(ParseConstants.KEY_DESCRIPTION, itemDesc);
-
+			item.put(ParseConstants.KEY_RATING, 0);
+			item.put(ParseConstants.KEY_TOTAL_LOVED, 0);
 			if (image == null) {
 				Toast.makeText(
 						getActivity(),
