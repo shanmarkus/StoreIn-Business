@@ -130,7 +130,7 @@ public class ItemDetail extends Fragment {
 
 				scaledData = bos.toByteArray();
 
-				image = new ParseFile(itemTitle + ".jpg", scaledData);
+				image = new ParseFile(itemTitle.trim() + ".jpg", scaledData);
 				image.saveInBackground();
 				Toast.makeText(getActivity(), "image ready", Toast.LENGTH_SHORT)
 						.show();
