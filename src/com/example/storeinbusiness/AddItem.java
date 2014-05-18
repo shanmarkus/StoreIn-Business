@@ -1,17 +1,21 @@
 package com.example.storeinbusiness;
 
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
+import android.app.AlertDialog;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.os.Build;
+
+import com.parse.ParseException;
 
 public class AddItem extends ActionBarActivity {
+
+	private static final String TAG = AddItem.class.getSimpleName();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -34,9 +38,6 @@ public class AddItem extends ActionBarActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
 			return true;
@@ -59,6 +60,30 @@ public class AddItem extends ActionBarActivity {
 					container, false);
 			return rootView;
 		}
+
+		@Override
+		public void onResume() {
+			super.onResume();
+		}
+
+		/*
+		 * add function
+		 */
+
+		/*
+		 * Parse Error Method
+		 */
+
+		private void errorAlertDialog(ParseException e) {
+			// failed
+			Log.e(TAG, e.getMessage());
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+			builder.setMessage(e.getMessage()).setTitle(R.string.error_title)
+					.setPositiveButton(android.R.string.ok, null);
+			AlertDialog dialog = builder.create();
+			dialog.show();
+		}
+
 	}
 
 }

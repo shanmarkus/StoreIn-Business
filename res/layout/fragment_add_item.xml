@@ -8,9 +8,46 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.storeinbusiness.AddItem$PlaceholderFragment" >
 
-    <TextView
+    <EditText
+        android:id="@+id/addItemNameField"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="14dp"
+        android:layout_marginTop="27dp"
+        android:ems="10"
+        android:hint="Name of Item" >
+
+        <requestFocus />
+    </EditText>
+
+    <EditText
+        android:id="@+id/addItemDescriptionField"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/addItemNameField"
+        android:layout_below="@+id/addItemNameField"
+        android:layout_marginTop="25dp"
+        android:ems="10"
+        android:hint="Description of Item" />
+
+    <Button
+        android:id="@+id/addItemSubmitButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/addItemGetImageButton"
+        android:layout_below="@+id/addItemGetImageButton"
+        android:layout_marginTop="20dp"
+        android:text="Submit" />
+
+    <Button
+        android:id="@+id/addItemGetImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/addItemDescriptionField"
+        android:layout_below="@+id/addItemDescriptionField"
+        android:layout_marginTop="23dp"
+        android:text="Get Image" />
 
 </RelativeLayout>
