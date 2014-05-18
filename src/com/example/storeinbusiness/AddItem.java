@@ -176,6 +176,7 @@ public class AddItem extends ActionBarActivity {
 			item.put(ParseConstants.KEY_DESCRIPTION, itemDesc);
 			item.put(ParseConstants.KEY_RATING, 0);
 			item.put(ParseConstants.KEY_TOTAL_LOVED, 0);
+			
 			if (image == null) {
 				Toast.makeText(
 						getActivity(),

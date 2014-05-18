@@ -70,7 +70,7 @@ public class MainActivity extends ActionBarActivity implements
 			fragmentManager.beginTransaction()
 					.replace(R.id.container, fragment).commit();
 			break;
-		
+
 		case 1:
 			fragment = new TopItemsFragment();
 			args.putString(ParseConstants.KEY_PLACE_ID, placeId);
@@ -80,17 +80,18 @@ public class MainActivity extends ActionBarActivity implements
 			break;
 
 		case 2:
+			fragment = new PromotionListFragment();
+			args.putString(ParseConstants.KEY_PLACE_ID, placeId);
+			fragment.setArguments(args);
+			fragmentManager.beginTransaction()
+					.replace(R.id.container, fragment).commit();
+			break;
+
+		case 3:
 			Intent intent = new Intent(this, BroadcastActivity.class);
 			intent.putExtra(ParseConstants.KEY_PLACE_ID, placeId);
 			startActivity(intent);
 			break;
-
-		// case 2:
-		// fragment = new FriendInformation();
-		// break;
-		// case 3:
-		// fragment = new UpdatesFragment();
-		// break;
 		}
 	}
 
@@ -104,6 +105,9 @@ public class MainActivity extends ActionBarActivity implements
 			break;
 		case 3:
 			mTitle = getString(R.string.title_section3);
+			break;
+		case 4:
+			mTitle = getString(R.string.title_section4);
 			break;
 		}
 	}
