@@ -28,6 +28,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -120,8 +122,26 @@ public class AddPromotion extends ActionBarActivity {
 			categoriesId = getResources().getStringArray(R.array.category_id);
 
 			// Initiate the UI
+			mAddPromotionRewardPoint = (EditText) rootView
+					.findViewById(R.id.addPromotionRewardPoint);
 			mAddPromotionClaimable = (CheckBox) rootView
 					.findViewById(R.id.addPromotionClaimable);
+			mAddPromotionClaimable
+					.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+						@Override
+						public void onCheckedChanged(CompoundButton buttonView,
+								boolean isChecked) {
+							if (mAddPromotionClaimable.isChecked()) {
+								mAddPromotionQuota.setEnabled(true);
+							} else {
+								mAddPromotionQuota.setEnabled(false);
+								mAddPromotionQuota.setText("");
+							}
+						}
+
+					});
+
 			mAddPromotionGetImage = (Button) rootView
 					.findViewById(R.id.addPromotionGetImage);
 			mAddPromotionNameField = (EditText) rootView
@@ -130,8 +150,6 @@ public class AddPromotion extends ActionBarActivity {
 					.findViewById(R.id.addPromotionQuota);
 			mAddPromotionRequirement = (EditText) rootView
 					.findViewById(R.id.addPromotionRequirement);
-			mAddPromotionRewardPoint = (EditText) rootView
-					.findViewById(R.id.addPromotionRewardPoint);
 			mAddPromotionSubmit = (Button) rootView
 					.findViewById(R.id.addPromotionSubmit);
 
@@ -252,12 +270,32 @@ public class AddPromotion extends ActionBarActivity {
 			promotionName = mAddPromotionNameField.getText().toString();
 			promotionRequirement = mAddPromotionRequirement.getText()
 					.toString();
-			promotionClaimable = mAddPromotionClaimable.isChecked();
 			promotionStartDate = (Date) mAddPromotionStartDate.getText();
 			promotionEndDate = (Date) mAddPromotionEndDate.getText();
-
+			promotionClaimable = mAddPromotionClaimable.isChecked();
+			promotionRewards = Integer.parseInt(mAddPromotionRewardPoint
+					.getText().toString());
 			ParseObject promotion = new ParseObject(
 					ParseConstants.TABLE_PROMOTION);
+			promotion.put(ParseConstants.KEY_NAME, promotionName);
+			promotion.put(ParseConstants.KEY_REQUIREMENT, promotionRequirement);
+			promotion.put(ParseConstants.KEY_PROMOTION_ID, promotionCategoryId);
+			promotion.put(ParseConstants.KEY_REWARD_POINT, promotionRewards);
+			promotion.put(ParseConstants.KEY_START_DATE, promotionStartDate);
+			promotion.put(ParseConstants.KEY_END_DATE, promotionEndDate);
+			promotion.put(ParseConstants.KEY_CLAIMABLE, promotionClaimable);
+			promotion.put(ParseConstants.KEY_IMAGE, image);
+
+			if (promotionClaimable == true) {
+				promotion.saveInBackground(new SaveCallback() {
+
+					@Override
+					public void done(ParseException e) {
+						createPromoQuota(promotion)
+
+					}
+				});
+			}
 
 		}
 
@@ -265,19 +303,20 @@ public class AddPromotion extends ActionBarActivity {
 		 * If Claimable is true the set the quota of the promotion
 		 */
 
-		private void createPromoQuota(final String promotionId) {
+		private void createPromoQuota(Integer promotionQuota,
+				final String promotionId) {
 			if (placeId == null) {
 				getPlaceId();
 			}
-			Integer promotionQuota = 0;
 			ParseObject currentPlace = ParseObject.createWithoutData(
 					ParseConstants.TABLE_PLACE, placeId);
 			ParseObject currentPromotion = ParseObject.createWithoutData(
 					ParseConstants.TABLE_PROMOTION, promotionId);
 			ParseObject relPromotionQuota = new ParseObject(
 					ParseConstants.TABLE_PROMOTION_QUOTA);
-			relPromotionQuota.put(ParseConstants.KEY_PLACE_ID, placeId);
-			relPromotionQuota.put(ParseConstants.KEY_PROMOTION_ID, promotionId);
+			relPromotionQuota.put(ParseConstants.KEY_PLACE_ID, currentPlace);
+			relPromotionQuota
+					.put(ParseConstants.KEY_PROMOTION_ID, currentPromotion);
 			relPromotionQuota.put(ParseConstants.KEY_QUOTA, promotionQuota);
 			relPromotionQuota.saveInBackground(new SaveCallback() {
 
