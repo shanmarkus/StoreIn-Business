@@ -25,6 +25,8 @@
         <item name="21">Apparel</item>
         <item name="22">Flash Deals</item>
     </string-array>
+    
+    
     <string-array name="category_id">
         <item name="1">5WN6F9Lq63</item>
         <item name="2">Q6NN9YrPPR</item>

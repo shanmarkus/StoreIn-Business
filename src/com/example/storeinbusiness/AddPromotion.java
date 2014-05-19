@@ -75,9 +75,7 @@ public class AddPromotion extends ActionBarActivity {
 		private Date promotionEndDate;
 
 		private String promotionCategoryId;
-		Resources res = getResources();
-		final TypedArray selectedValues = res
-				.obtainTypedArray(R.array.category_id);
+		String[] categoriesId;
 
 		public PlaceholderFragment() {
 		}
@@ -88,6 +86,10 @@ public class AddPromotion extends ActionBarActivity {
 			View rootView = inflater.inflate(R.layout.fragment_add_promotion,
 					container, false);
 
+			// Get values
+			getPlaceId();
+			categoriesId = getResources().getStringArray(R.array.category_id);
+
 			// Initiate the UI
 			mAddPromotionSpinner = (Spinner) rootView
 					.findViewById(R.id.addPromotionSpinner);
@@ -97,9 +99,10 @@ public class AddPromotion extends ActionBarActivity {
 						@Override
 						public void onItemSelected(AdapterView<?> parent,
 								View view, int position, long id) {
-							String selectedValue = selectedValues
-									.getString(position);
-							Toast.makeText(getActivity(), selectedValue,
+							int tempPosition = mAddPromotionSpinner
+									.getSelectedItemPosition();
+							promotionCategoryId = categoriesId[tempPosition];
+							Toast.makeText(getActivity(), promotionCategoryId,
 									Toast.LENGTH_SHORT).show();
 
 						}
@@ -116,6 +119,11 @@ public class AddPromotion extends ActionBarActivity {
 		@Override
 		public void onResume() {
 			super.onResume();
+		}
+
+		@Override
+		public void onPause() {
+			super.onPause();
 		}
 
 		/*
