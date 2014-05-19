@@ -290,7 +290,7 @@ public class AddItem extends ActionBarActivity {
 		};
 
 		/*
-		 * Alert Dialog For Check In
+		 * Alert Dialog For Adding Item
 		 */
 
 		DialogInterface.OnClickListener dialogAddItemListener = new DialogInterface.OnClickListener() {

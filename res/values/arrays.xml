@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="categories_list">
+        <item name="1">Costumes</item>
+        <item name="2">Books and Magazines</item>
+        <item name="3">Automotive</item>
+        <item name="4">Weddings</item>
+        <item name="5">Tools and Hardware</item>
+        <item name="6">Outdoors</item>
+        <item name="7">Movies and Music</item>
+        <item name="8">House and Home</item>
+        <item name="9">Grocery</item>
+        <item name="10">Gift Certificates</item>
+        <item name="11">Event Tickets</item>
+        <item name="12">Computers</item>
+        <item name="13">Valentine Day</item>
+        <item name="14">Office Supplies</item>
+        <item name="15">Memorial Day</item>
+        <item name="16">Hobby and Collectible</item>
+        <item name="17">Green Living</item>
+        <item name="18">Electronics</item>
+        <item name="19">College and Education</item>
+        <item name="20">Babies and Kids</item>
+        <item name="21">Apparel</item>
+        <item name="22">Flash Deals</item>
+    </string-array>
+    <string-array name="category_id">
+        <item name="1">5WN6F9Lq63</item>
+        <item name="2">Q6NN9YrPPR</item>
+        <item name="3">KHBlp64sKs</item>
+        <item name="4">1ex5rBMwp9</item>
+        <item name="5">3qCPxAUuRe</item>
+        <item name="6">vhge6Dn79J</item>
+        <item name="7">A2NpI9sMm2</item>
+        <item name="8">CIZ0gkEoFz</item>
+        <item name="9">rngzWZq5HE</item>
+        <item name="10">xqsek1XiuG</item>
+        <item name="11">W1icLLMFEI</item>
+        <item name="12">Khn1xMiGkJ</item>
+        <item name="13">QrImVo4lhm</item>
+        <item name="14">9TTHYhcBfQ</item>
+        <item name="15">V3Zxc40onk</item>
+        <item name="16">wf7RMebx3R</item>
+        <item name="17">gHzn2Iysvi</item>
+        <item name="18">gIniMnWYgI</item>
+        <item name="19">wzvWaypOuG</item>
+        <item name="20">TwwYAAywnW</item>
+        <item name="21">KcrrXPZQGf</item>
+    </string-array>
+
+</resources>

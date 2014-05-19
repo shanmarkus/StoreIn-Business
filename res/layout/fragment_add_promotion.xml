@@ -4,4 +4,15 @@
     android:layout_height="match_parent"
     tools:context="com.example.storeinbusiness.AddPromotion$PlaceholderFragment" >
 
+    <Spinner
+        android:id="@+id/addPromotionSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="14dp"
+        android:layout_marginTop="110dp"
+        android:entries="@array/categories_list"
+        android:entryValues="@array/category_id" />
+
 </RelativeLayout>
