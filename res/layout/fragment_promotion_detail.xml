@@ -1,73 +1,103 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/ScrollView1"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    tools:context="com.example.storein.ItemDetail$PlaceholderFragment" >
+    android:layout_height="match_parent" >
 
-    <RelativeLayout
+    <Spinner
+        android:id="@+id/editPromotionSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:entries="@array/categories_list" />
+
+    <EditText
+        android:id="@+id/editPromotionStartDate"
+        android:layout_width="wrap_content"
+        android:hint="Start Date i.e 2/12/2014 "
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/editPromotionRequirement"
+        android:ems="10"
+        android:inputType="date" />
+
+    <EditText
+        android:id="@+id/editPromotionNameField"
+        android:hint="Name of Promotion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/editPromotionSpinner"
+        android:ems="10" />
+
+    <EditText
+        android:id="@+id/editPromotionRequirement"
         android:layout_width="match_parent"
-        android:layout_height="368dp" >
+        android:hint="Requirement of Promotion"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/editPromotionNameField"
+        android:layout_marginTop="5dp"
+        android:ems="10" />
 
-        <EditText
-            android:id="@+id/itemDetailNameText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="21dp"
-            android:ems="10" >
+    <EditText
+        android:id="@+id/editPromotionEndDate"
+        android:hint="End Date i.e 2/2/2015"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/editPromotionStartDate"
+        android:layout_marginTop="5dp"
+        android:ems="10"
+        android:inputType="date" />
 
-            <requestFocus />
-        </EditText>
+    <Button
+        android:id="@+id/editPromotionSubmit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/editPromotionGetImage"
+        android:layout_alignParentRight="true"
+        android:text="@string/add_promotion_submit" />
 
-        <EditText
-            android:id="@+id/itemDetailDescriptionEditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/itemDetailNameText"
-            android:layout_below="@+id/itemDetailNameText"
-            android:layout_marginTop="26dp"
-            android:ems="10" />
+    <EditText
+        android:id="@+id/editPromotionRewardPoint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/editPromotionClaimable"
+        android:ems="10"
+        android:hint="Reward for Promotion"
+        android:inputType="number" />
 
-        <Button
-            android:id="@+id/itemDetailEditButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/itemDetailDescriptionEditText"
-            android:layout_below="@+id/itemDetailDescriptionEditText"
-            android:layout_marginTop="57dp"
-            android:text="@string/item_detail_edit_button" />
+    <CheckBox
+        android:id="@+id/editPromotionClaimable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/editPromotionEndDate"
+        android:text="Limited Promotion" />
 
-        <Button
-            android:id="@+id/itemDetailDeleteButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/itemDetailEditButton"
-            android:layout_alignBottom="@+id/itemDetailEditButton"
-            android:layout_marginLeft="26dp"
-            android:layout_toRightOf="@+id/itemDetailEditButton"
-            android:text="@string/item_detail_delete_item" />
+    <EditText
+        android:id="@+id/editPromotionQuota"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/editPromotionRewardPoint"
+        android:ems="10"
+        android:hint="Quota of Promotion"
+        android:inputType="number" >
 
-        <Button
-            android:id="@+id/itemDetailUploadImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/itemDetailEditButton"
-            android:layout_below="@+id/itemDetailEditButton"
-            android:layout_marginLeft="14dp"
-            android:layout_marginTop="25dp"
-            android:text="@string/item_detail_upload_button" />
+        <requestFocus />
+    </EditText>
 
-        <Button
-            android:id="@+id/itemDetailGetImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/itemDetailUploadImage"
-            android:layout_alignParentBottom="true"
-            android:text="@string/item_detail_get_image" />
+    <Button
+        android:id="@+id/editPromotionGetImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="16dp"
+        android:text="@string/add_promotion_get_image" />
 
-    </RelativeLayout>
 
-</ScrollView>
+</RelativeLayout>
