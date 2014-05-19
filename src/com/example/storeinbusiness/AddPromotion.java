@@ -23,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -98,6 +99,7 @@ public class AddPromotion extends ActionBarActivity {
 		private String promotionRequirement;
 		private boolean promotionClaimable;
 		private Integer promotionRewards;
+		private Integer promotionQuota;
 		private Date promotionStartDate;
 		private Date promotionEndDate;
 
@@ -142,16 +144,20 @@ public class AddPromotion extends ActionBarActivity {
 
 					});
 
-			mAddPromotionGetImage = (Button) rootView
-					.findViewById(R.id.addPromotionGetImage);
 			mAddPromotionNameField = (EditText) rootView
 					.findViewById(R.id.addPromotionNameField);
 			mAddPromotionQuota = (EditText) rootView
 					.findViewById(R.id.addPromotionQuota);
 			mAddPromotionRequirement = (EditText) rootView
 					.findViewById(R.id.addPromotionRequirement);
+
 			mAddPromotionSubmit = (Button) rootView
 					.findViewById(R.id.addPromotionSubmit);
+			mAddPromotionSubmit.setOnClickListener(submitButton);
+
+			mAddPromotionGetImage = (Button) rootView
+					.findViewById(R.id.addPromotionGetImage);
+			mAddPromotionGetImage.setOnClickListener(getImage);
 
 			mAddPromotionStartDate = (EditText) rootView
 					.findViewById(R.id.addPromotionStartDate);
@@ -258,6 +264,26 @@ public class AddPromotion extends ActionBarActivity {
 		}
 
 		/*
+		 * On Click Listener
+		 */
+
+		OnClickListener getImage = new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				getImage();
+			}
+		};
+
+		OnClickListener submitButton = new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				createPromotion();
+			}
+		};
+
+		/*
 		 * Create new Promotion
 		 */
 
@@ -275,7 +301,7 @@ public class AddPromotion extends ActionBarActivity {
 			promotionClaimable = mAddPromotionClaimable.isChecked();
 			promotionRewards = Integer.parseInt(mAddPromotionRewardPoint
 					.getText().toString());
-			ParseObject promotion = new ParseObject(
+			final ParseObject promotion = new ParseObject(
 					ParseConstants.TABLE_PROMOTION);
 			promotion.put(ParseConstants.KEY_NAME, promotionName);
 			promotion.put(ParseConstants.KEY_REQUIREMENT, promotionRequirement);
@@ -286,17 +312,25 @@ public class AddPromotion extends ActionBarActivity {
 			promotion.put(ParseConstants.KEY_CLAIMABLE, promotionClaimable);
 			promotion.put(ParseConstants.KEY_IMAGE, image);
 
-			if (promotionClaimable == true) {
-				promotion.saveInBackground(new SaveCallback() {
+			promotion.saveInBackground(new SaveCallback() {
 
-					@Override
-					public void done(ParseException e) {
-						createPromoQuota(promotion)
-
+				@Override
+				public void done(ParseException e) {
+					if (e == null) {
+						promotionId = promotion.getObjectId();
+						if (promotionClaimable == true) {
+							promotionQuota = Integer
+									.parseInt(mAddPromotionQuota.getText()
+											.toString());
+							createPromoQuota(promotionQuota, promotionId);
+						} else {
+							createRelPlacePromo(promotionId);
+						}
+					} else {
+						errorAlertDialog(e);
 					}
-				});
-			}
-
+				}
+			});
 		}
 
 		/*
@@ -315,8 +349,8 @@ public class AddPromotion extends ActionBarActivity {
 			ParseObject relPromotionQuota = new ParseObject(
 					ParseConstants.TABLE_PROMOTION_QUOTA);
 			relPromotionQuota.put(ParseConstants.KEY_PLACE_ID, currentPlace);
-			relPromotionQuota
-					.put(ParseConstants.KEY_PROMOTION_ID, currentPromotion);
+			relPromotionQuota.put(ParseConstants.KEY_PROMOTION_ID,
+					currentPromotion);
 			relPromotionQuota.put(ParseConstants.KEY_QUOTA, promotionQuota);
 			relPromotionQuota.saveInBackground(new SaveCallback() {
 
@@ -347,7 +381,8 @@ public class AddPromotion extends ActionBarActivity {
 			ParseObject relPlacePromo = new ParseObject(
 					ParseConstants.TABLE_REL_PROMOTION_PLACE);
 			relPlacePromo.put(ParseConstants.KEY_PLACE_ID, currentPlace);
-			relPlacePromo.put(ParseConstants.KEY_PROMOTION_ID, promotionId);
+			relPlacePromo
+					.put(ParseConstants.KEY_PROMOTION_ID, currentPromotion);
 			relPlacePromo.put(ParseConstants.KEY_TOTAL_CLAIMED, 0);
 			relPlacePromo.saveInBackground(new SaveCallback() {
 
