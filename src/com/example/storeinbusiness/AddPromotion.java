@@ -325,8 +325,12 @@ public class AddPromotion extends ActionBarActivity {
 			promotion.put(ParseConstants.KEY_START_DATE, promotionStartDate);
 			promotion.put(ParseConstants.KEY_END_DATE, promotionEndDate);
 			promotion.put(ParseConstants.KEY_CLAIMABLE, promotionClaimable);
-			promotion.put(ParseConstants.KEY_IMAGE, image);
-
+			if (image == null) {
+				Toast.makeText(getActivity(), "You have not put image",
+						Toast.LENGTH_SHORT).show();
+			} else {
+				promotion.put(ParseConstants.KEY_IMAGE, image);
+			}
 			promotion.saveInBackground(new SaveCallback() {
 
 				@Override
