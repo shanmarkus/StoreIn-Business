@@ -10,9 +10,94 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="14dp"
-        android:layout_marginTop="110dp"
-        android:entries="@array/categories_list"
-        android:entryValues="@array/category_id" />
+        android:entries="@array/categories_list" />
+
+    <EditText
+        android:id="@+id/addPromotionStartDate"
+        android:layout_width="wrap_content"
+        android:hint="Start Date of Promotion"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/addPromotionRequirement"
+        android:ems="10"
+        android:inputType="date" />
+
+    <EditText
+        android:id="@+id/addPromotionNameField"
+        android:hint="Name of Promotion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/addPromotionSpinner"
+        android:ems="10" />
+
+    <EditText
+        android:id="@+id/addPromotionRequirement"
+        android:layout_width="match_parent"
+        android:hint="Requirement of Promotion"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/addPromotionNameField"
+        android:layout_marginTop="5dp"
+        android:ems="10" />
+
+    <EditText
+        android:id="@+id/addPromotionEndDate"
+        android:hint="End Date of Promotion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/addPromotionStartDate"
+        android:layout_marginTop="5dp"
+        android:ems="10"
+        android:inputType="date" />
+
+    <Button
+        android:id="@+id/addPromotionGetImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="17dp"
+        android:text="Button" />
+
+    <Button
+        android:id="@+id/addPromotionSubmit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/addPromotionGetImage"
+        android:layout_alignParentRight="true"
+        android:text="Button" />
+
+    <EditText
+        android:id="@+id/addPromotionRewardPoint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/addPromotionClaimable"
+        android:ems="10"
+        android:hint="Reward for Promotion"
+        android:inputType="number" />
+
+    <CheckBox
+        android:id="@+id/addPromotionClaimable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/addPromotionEndDate"
+        android:text="Limited Promotion" />
+
+    <EditText
+        android:id="@+id/addPromotionQuota"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/addPromotionRewardPoint"
+        android:ems="10"
+        android:hint="Quota of Promotion"
+        android:inputType="number" >
+
+        <requestFocus />
+    </EditText>
 
 </RelativeLayout>
