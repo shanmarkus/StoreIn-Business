@@ -1,14 +1,23 @@
 package com.example.storeinbusiness;
 
+import java.io.ByteArrayOutputStream;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,10 +26,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.SaveCallback;
 
@@ -63,11 +76,23 @@ public class AddPromotion extends ActionBarActivity {
 		// UI Declaration
 		Spinner mAddPromotionSpinner;
 
+		EditText mAddPromotionStartDate;
+		EditText mAddPromotionNameField;
+		EditText mAddPromotionRequirement;
+		EditText mAddPromotionEndDate;
+		EditText mAddPromotionRewardPoint;
+		EditText mAddPromotionQuota;
+
+		CheckBox mAddPromotionClaimable;
+		Button mAddPromotionSubmit;
+		Button mAddPromotionGetImage;
+
 		// Variables
 		private String placeId;
+		private String placeName;
+
 		private String promotionId;
 		private String promotionName;
-		private String promotionDescription;
 		private String promotionRequirement;
 		private boolean promotionClaimable;
 		private Integer promotionRewards;
@@ -76,6 +101,10 @@ public class AddPromotion extends ActionBarActivity {
 
 		private String promotionCategoryId;
 		String[] categoriesId;
+		public final static int REQ_CODE_PICK_IMAGE = 1;
+		Bitmap yourSelectedImage;
+		byte[] scaledData;
+		ParseFile image;
 
 		public PlaceholderFragment() {
 		}
@@ -91,6 +120,28 @@ public class AddPromotion extends ActionBarActivity {
 			categoriesId = getResources().getStringArray(R.array.category_id);
 
 			// Initiate the UI
+			mAddPromotionClaimable = (CheckBox) rootView
+					.findViewById(R.id.addPromotionClaimable);
+			mAddPromotionGetImage = (Button) rootView
+					.findViewById(R.id.addPromotionGetImage);
+			mAddPromotionNameField = (EditText) rootView
+					.findViewById(R.id.addPromotionNameField);
+			mAddPromotionQuota = (EditText) rootView
+					.findViewById(R.id.addPromotionQuota);
+			mAddPromotionRequirement = (EditText) rootView
+					.findViewById(R.id.addPromotionRequirement);
+			mAddPromotionRewardPoint = (EditText) rootView
+					.findViewById(R.id.addPromotionRewardPoint);
+			mAddPromotionSubmit = (Button) rootView
+					.findViewById(R.id.addPromotionSubmit);
+
+			mAddPromotionStartDate = (EditText) rootView
+					.findViewById(R.id.addPromotionStartDate);
+			mAddPromotionStartDate.addTextChangedListener(tw);
+			mAddPromotionEndDate = (EditText) rootView
+					.findViewById(R.id.addPromotionEndDate);
+			mAddPromotionEndDate.addTextChangedListener(tws);
+
 			mAddPromotionSpinner = (Spinner) rootView
 					.findViewById(R.id.addPromotionSpinner);
 			mAddPromotionSpinner
@@ -126,6 +177,42 @@ public class AddPromotion extends ActionBarActivity {
 			super.onPause();
 		}
 
+		@Override
+		public void onActivityResult(int requestCode, int resultCode,
+				Intent imageReturnedIntent) {
+			super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+
+			switch (requestCode) {
+			case REQ_CODE_PICK_IMAGE:
+				if (resultCode == Activity.RESULT_OK) {
+					Uri selectedImage = imageReturnedIntent.getData();
+					String[] filePathColumn = { MediaStore.Images.Media.DATA };
+
+					Cursor cursor = getActivity().getContentResolver().query(
+							selectedImage, filePathColumn, null, null, null);
+					cursor.moveToFirst();
+
+					int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+					String filePath = cursor.getString(columnIndex);
+					cursor.close();
+
+					yourSelectedImage = BitmapFactory.decodeFile(filePath);
+					ByteArrayOutputStream bos = new ByteArrayOutputStream();
+					yourSelectedImage.compress(Bitmap.CompressFormat.JPEG, 100,
+							bos);
+
+					scaledData = bos.toByteArray();
+					promotionName = mAddPromotionNameField.getText().toString()
+							.trim();
+
+					image = new ParseFile(promotionName + ".jpg", scaledData);
+					image.saveInBackground();
+					Toast.makeText(getActivity(), "image ready",
+							Toast.LENGTH_SHORT).show();
+				}
+			}
+		}
+
 		/*
 		 * Added Function
 		 */
@@ -139,6 +226,19 @@ public class AddPromotion extends ActionBarActivity {
 			return placeId;
 		}
 
+		public String getPlaceName() {
+			Intent intent = getActivity().getIntent();
+			placeName = intent.getStringExtra(ParseConstants.KEY_NAME);
+			return placeId;
+		}
+
+		private void getImage() {
+			Intent i = new Intent(
+					Intent.ACTION_PICK,
+					android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+			startActivityForResult(i, REQ_CODE_PICK_IMAGE);
+		}
+
 		/*
 		 * Create new Promotion
 		 */
@@ -149,6 +249,12 @@ public class AddPromotion extends ActionBarActivity {
 			}
 
 			// Get value from UI
+			promotionName = mAddPromotionNameField.getText().toString();
+			promotionRequirement = mAddPromotionRequirement.getText()
+					.toString();
+			promotionClaimable = mAddPromotionClaimable.isChecked();
+			promotionStartDate = (Date) mAddPromotionStartDate.getText();
+			promotionEndDate = (Date) mAddPromotionEndDate.getText();
 
 			ParseObject promotion = new ParseObject(
 					ParseConstants.TABLE_PROMOTION);
@@ -218,6 +324,132 @@ public class AddPromotion extends ActionBarActivity {
 				}
 			});
 		}
+
+		/*
+		 * Text Watcher
+		 */
+
+		TextWatcher tw = new TextWatcher() {
+			private String current = "";
+			private String ddmmyyyy = "DDMMYYYY";
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {
+				if (!s.toString().equals(current)) {
+					String clean = s.toString().replaceAll("[^\\d.]", "");
+					String cleanC = current.replaceAll("[^\\d.]", "");
+
+					int cl = clean.length();
+					int sel = cl;
+					for (int i = 2; i <= cl && i < 6; i += 2) {
+						sel++;
+					}
+					// Fix for pressing delete next to a forward slash
+					if (clean.equals(cleanC))
+						sel--;
+
+					if (clean.length() < 8) {
+						clean = clean + ddmmyyyy.substring(clean.length());
+					} else {
+						// This part makes sure that when we finish entering
+						// numbers
+						// the date is correct, fixing it otherways
+						int day = Integer.parseInt(clean.substring(0, 2));
+						int mon = Integer.parseInt(clean.substring(2, 4));
+						int year = Integer.parseInt(clean.substring(4, 8));
+
+						if (mon > 12)
+							mon = 12;
+						Calendar cal = new GregorianCalendar();
+						cal.set(Calendar.MONTH, mon - 1);
+						day = (day > cal.getActualMaximum(Calendar.DATE)) ? cal
+								.getActualMaximum(Calendar.DATE) : day;
+						year = (year < 1900) ? 1900 : (year > 2100) ? 2100
+								: year;
+						clean = String.format("%02d%02d%02d", day, mon, year);
+					}
+
+					clean = String.format("%s/%s/%s", clean.substring(0, 2),
+							clean.substring(2, 4), clean.substring(4, 8));
+					current = clean;
+					mAddPromotionStartDate.setText(current);
+					mAddPromotionStartDate
+							.setSelection(sel < current.length() ? sel
+									: current.length());
+				}
+			}
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+			}
+		};
+
+		TextWatcher tws = new TextWatcher() {
+			private String current = "";
+			private String ddmmyyyy = "DDMMYYYY";
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {
+				if (!s.toString().equals(current)) {
+					String clean = s.toString().replaceAll("[^\\d.]", "");
+					String cleanC = current.replaceAll("[^\\d.]", "");
+
+					int cl = clean.length();
+					int sel = cl;
+					for (int i = 2; i <= cl && i < 6; i += 2) {
+						sel++;
+					}
+					// Fix for pressing delete next to a forward slash
+					if (clean.equals(cleanC))
+						sel--;
+
+					if (clean.length() < 8) {
+						clean = clean + ddmmyyyy.substring(clean.length());
+					} else {
+						// This part makes sure that when we finish entering
+						// numbers
+						// the date is correct, fixing it otherways
+						int day = Integer.parseInt(clean.substring(0, 2));
+						int mon = Integer.parseInt(clean.substring(2, 4));
+						int year = Integer.parseInt(clean.substring(4, 8));
+
+						if (mon > 12)
+							mon = 12;
+						Calendar cal = new GregorianCalendar();
+						cal.set(Calendar.MONTH, mon - 1);
+						day = (day > cal.getActualMaximum(Calendar.DATE)) ? cal
+								.getActualMaximum(Calendar.DATE) : day;
+						year = (year < 1900) ? 1900 : (year > 2100) ? 2100
+								: year;
+						clean = String.format("%02d%02d%02d", day, mon, year);
+					}
+
+					clean = String.format("%s/%s/%s", clean.substring(0, 2),
+							clean.substring(2, 4), clean.substring(4, 8));
+					current = clean;
+					mAddPromotionEndDate.setText(current);
+					mAddPromotionEndDate
+							.setSelection(sel < current.length() ? sel
+									: current.length());
+				}
+			}
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+			}
+		};
 
 		/*
 		 * Parse Error Method

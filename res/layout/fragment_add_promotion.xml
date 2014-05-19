@@ -15,7 +15,7 @@
     <EditText
         android:id="@+id/addPromotionStartDate"
         android:layout_width="wrap_content"
-        android:hint="Start Date of Promotion"
+        android:hint="Start Date i.e 2/12/2014 "
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/addPromotionRequirement"
@@ -43,7 +43,7 @@
 
     <EditText
         android:id="@+id/addPromotionEndDate"
-        android:hint="End Date of Promotion"
+        android:hint="End Date i.e 2/2/2015"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -53,21 +53,12 @@
         android:inputType="date" />
 
     <Button
-        android:id="@+id/addPromotionGetImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_marginBottom="17dp"
-        android:text="Button" />
-
-    <Button
         android:id="@+id/addPromotionSubmit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/addPromotionGetImage"
         android:layout_alignParentRight="true"
-        android:text="Button" />
+        android:text="@string/add_promotion_submit" />
 
     <EditText
         android:id="@+id/addPromotionRewardPoint"
@@ -99,5 +90,15 @@
 
         <requestFocus />
     </EditText>
+
+    <Button
+        android:id="@+id/addPromotionGetImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="16dp"
+        android:text="@string/add_promotion_get_image" />
+
 
 </RelativeLayout>

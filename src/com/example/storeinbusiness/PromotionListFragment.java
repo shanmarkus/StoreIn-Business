@@ -39,6 +39,7 @@ public class PromotionListFragment extends Fragment {
 	protected ArrayList<String> promotionId = new ArrayList<String>();
 	HashMap<String, String> promotionInfo = new HashMap<String, String>();
 	String placeId;
+	String placeName;
 
 	// Parse Constants
 
@@ -127,6 +128,7 @@ public class PromotionListFragment extends Fragment {
 				.getQuery(ParseConstants.TABLE_REL_PROMOTION_PLACE);
 		query.whereEqualTo(ParseConstants.KEY_PLACE_ID, currentPlace);
 		query.include(ParseConstants.KEY_PROMOTION_ID);
+		query.include(ParseConstants.KEY_PLACE_ID);
 		query.findInBackground(new FindCallback<ParseObject>() {
 
 			@Override
@@ -136,6 +138,12 @@ public class PromotionListFragment extends Fragment {
 						HashMap<String, String> promotionInfo = new HashMap<String, String>();
 						ParseObject currentPromotion = object
 								.getParseObject(ParseConstants.KEY_PROMOTION_ID);
+						ParseObject currentPlace = object
+								.getParseObject(ParseConstants.KEY_PLACE_ID);
+
+						placeName = currentPlace
+								.getString(ParseConstants.KEY_NAME);
+
 						String promotionName = currentPromotion
 								.getString(ParseConstants.KEY_NAME);
 						Date createdAt = currentPromotion.getCreatedAt();
@@ -199,6 +207,7 @@ public class PromotionListFragment extends Fragment {
 		public void onClick(View v) {
 			Intent intent = new Intent(getActivity(), AddPromotion.class);
 			intent.putExtra(ParseConstants.KEY_PLACE_ID, placeId);
+			intent.putExtra(ParseConstants.KEY_NAME, placeName);
 			startActivity(intent);
 		}
 	};
