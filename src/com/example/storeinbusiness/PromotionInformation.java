@@ -99,19 +99,51 @@ public class PromotionInformation extends ActionBarActivity implements
 	 */
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
+		// Intent Variables
+		protected String promotionId;
+
 		public SectionsPagerAdapter(FragmentManager fm) {
 			super(fm);
 		}
 
+		// Setter Getter for intents
+		public String getPromotionId() {
+			return promotionId = getIntent().getExtras().getString(
+					ParseConstants.KEY_PROMOTION_ID);
+		}
+
 		@Override
-		public Fragment getItem(int position) {
-			return PlaceholderFragment.newInstance(position + 1);
+		public Fragment getItem(int i) {
+			if (promotionId == null) {
+				getPromotionId();
+			}
+			Fragment fragment = new PromotionDetail();
+			Bundle args = new Bundle();
+			switch (i) {
+			case 0:
+				fragment = new ItemDetail();
+				args.putString(ParseConstants.KEY_PROMOTION_ID, promotionId);
+				fragment.setArguments(args);
+				return fragment;
+
+				// case 1:
+				// fragment = new ItemReview();
+				// args.putString(ParseConstants.KEY_OBJECT_ID, itemId);
+				// fragment.setArguments(args);
+				// return fragment;
+
+			default:
+				fragment = new ItemDetail();
+				args.putString(ParseConstants.KEY_OBJECT_ID, promotionId);
+				fragment.setArguments(args);
+				return fragment;
+			}
 		}
 
 		@Override
 		public int getCount() {
-			// Show 3 total pages.
-			return 3;
+			// Show 2 total pages.
+			return 2;
 		}
 
 		@Override
@@ -122,8 +154,6 @@ public class PromotionInformation extends ActionBarActivity implements
 				return getString(R.string.title_section1).toUpperCase(l);
 			case 1:
 				return getString(R.string.title_section2).toUpperCase(l);
-			case 2:
-				return getString(R.string.title_section3).toUpperCase(l);
 			}
 			return null;
 		}

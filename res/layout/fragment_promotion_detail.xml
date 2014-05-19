@@ -1,0 +1,73 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ScrollView1"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context="com.example.storein.ItemDetail$PlaceholderFragment" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="368dp" >
+
+        <EditText
+            android:id="@+id/itemDetailNameText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="21dp"
+            android:ems="10" >
+
+            <requestFocus />
+        </EditText>
+
+        <EditText
+            android:id="@+id/itemDetailDescriptionEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/itemDetailNameText"
+            android:layout_below="@+id/itemDetailNameText"
+            android:layout_marginTop="26dp"
+            android:ems="10" />
+
+        <Button
+            android:id="@+id/itemDetailEditButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/itemDetailDescriptionEditText"
+            android:layout_below="@+id/itemDetailDescriptionEditText"
+            android:layout_marginTop="57dp"
+            android:text="@string/item_detail_edit_button" />
+
+        <Button
+            android:id="@+id/itemDetailDeleteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/itemDetailEditButton"
+            android:layout_alignBottom="@+id/itemDetailEditButton"
+            android:layout_marginLeft="26dp"
+            android:layout_toRightOf="@+id/itemDetailEditButton"
+            android:text="@string/item_detail_delete_item" />
+
+        <Button
+            android:id="@+id/itemDetailUploadImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/itemDetailEditButton"
+            android:layout_below="@+id/itemDetailEditButton"
+            android:layout_marginLeft="14dp"
+            android:layout_marginTop="25dp"
+            android:text="@string/item_detail_upload_button" />
+
+        <Button
+            android:id="@+id/itemDetailGetImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/itemDetailUploadImage"
+            android:layout_alignParentBottom="true"
+            android:text="@string/item_detail_get_image" />
+
+    </RelativeLayout>
+
+</ScrollView>
