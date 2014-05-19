@@ -1,6 +1,8 @@
 package com.example.storeinbusiness;
 
 import java.io.ByteArrayOutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -292,12 +294,25 @@ public class AddPromotion extends ActionBarActivity {
 				getPlaceId();
 			}
 
+			DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
 			// Get value from UI
 			promotionName = mAddPromotionNameField.getText().toString();
 			promotionRequirement = mAddPromotionRequirement.getText()
 					.toString();
-			promotionStartDate = (Date) mAddPromotionStartDate.getText();
-			promotionEndDate = (Date) mAddPromotionEndDate.getText();
+			try {
+				promotionStartDate = sdf.parse(mAddPromotionStartDate.getText()
+						.toString());
+			} catch (java.text.ParseException e1) {
+				e1.printStackTrace();
+			}
+			try {
+				promotionEndDate = sdf.parse(mAddPromotionEndDate.getText()
+						.toString());
+			} catch (java.text.ParseException e1) {
+				e1.printStackTrace();
+			}
+
 			promotionClaimable = mAddPromotionClaimable.isChecked();
 			promotionRewards = Integer.parseInt(mAddPromotionRewardPoint
 					.getText().toString());
@@ -305,7 +320,7 @@ public class AddPromotion extends ActionBarActivity {
 					ParseConstants.TABLE_PROMOTION);
 			promotion.put(ParseConstants.KEY_NAME, promotionName);
 			promotion.put(ParseConstants.KEY_REQUIREMENT, promotionRequirement);
-			promotion.put(ParseConstants.KEY_PROMOTION_ID, promotionCategoryId);
+			promotion.put(ParseConstants.KEY_CATEGORY_ID, promotionCategoryId);
 			promotion.put(ParseConstants.KEY_REWARD_POINT, promotionRewards);
 			promotion.put(ParseConstants.KEY_START_DATE, promotionStartDate);
 			promotion.put(ParseConstants.KEY_END_DATE, promotionEndDate);
