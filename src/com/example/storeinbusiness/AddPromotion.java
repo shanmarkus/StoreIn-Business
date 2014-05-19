@@ -4,6 +4,8 @@ import java.util.Date;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
@@ -13,6 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -71,6 +75,9 @@ public class AddPromotion extends ActionBarActivity {
 		private Date promotionEndDate;
 
 		private String promotionCategoryId;
+		Resources res = getResources();
+		final TypedArray selectedValues = res
+				.obtainTypedArray(R.array.category_id);
 
 		public PlaceholderFragment() {
 		}
@@ -80,6 +87,29 @@ public class AddPromotion extends ActionBarActivity {
 				Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_add_promotion,
 					container, false);
+
+			// Initiate the UI
+			mAddPromotionSpinner = (Spinner) rootView
+					.findViewById(R.id.addPromotionSpinner);
+			mAddPromotionSpinner
+					.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+						@Override
+						public void onItemSelected(AdapterView<?> parent,
+								View view, int position, long id) {
+							String selectedValue = selectedValues
+									.getString(position);
+							Toast.makeText(getActivity(), selectedValue,
+									Toast.LENGTH_SHORT).show();
+
+						}
+
+						@Override
+						public void onNothingSelected(AdapterView<?> parent) {
+							// TODO Auto-generated method stub
+
+						}
+					});
 			return rootView;
 		}
 
@@ -90,10 +120,6 @@ public class AddPromotion extends ActionBarActivity {
 
 		/*
 		 * Added Function
-		 */
-
-		/*
-		 * Get Category Type
 		 */
 
 		/*
