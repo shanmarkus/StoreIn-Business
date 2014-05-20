@@ -30,6 +30,7 @@
     <string name="title_activity_add_item">AddItem</string>
     <string name="add_promotion_get_image">Get Image</string>
     <string name="add_promotion_submit">Submit</string>
+    <string name="edit_promotion_delete">Delete</string>
 
 
 </resources>

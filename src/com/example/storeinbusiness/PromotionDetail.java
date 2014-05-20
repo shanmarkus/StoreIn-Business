@@ -1,7 +1,9 @@
 package com.example.storeinbusiness;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import android.app.Activity;
@@ -14,12 +16,22 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.parse.FindCallback;
 import com.parse.GetCallback;
@@ -34,7 +46,16 @@ public class PromotionDetail extends Fragment {
 	private static final String TAG = PromotionDetail.class.getSimpleName();
 
 	// UI Variable Declaration
-	ParseImageView mImageView;
+	EditText mPromotionDetailStartDate;
+	EditText mPromotionDetailNameField;
+	EditText mPromotionDetailRequirement;
+	EditText mPromotionDetailEndDate;
+	EditText mPromotionDetailRewardPoint;
+	EditText mPromotionDetailQuota;
+
+	CheckBox mPromotionDetailClaimable;
+	Button mPromotionDetailSubmit;
+	Button mPromotionDetailGetImage;
 
 	// Fixed Variables
 	private Integer totalClaimed;
@@ -67,6 +88,47 @@ public class PromotionDetail extends Fragment {
 				container, false);
 
 		// Declare UI Variables
+		mPromotionDetailRewardPoint = (EditText) rootView
+				.findViewById(R.id.promotionDetailRewardPoint);
+		mPromotionDetailClaimable = (CheckBox) rootView
+				.findViewById(R.id.promotionDetailClaimable);
+		mPromotionDetailClaimable
+				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+					@Override
+					public void onCheckedChanged(CompoundButton buttonView,
+							boolean isChecked) {
+						if (mPromotionDetailClaimable.isChecked()) {
+							mPromotionDetailQuota.setEnabled(true);
+						} else {
+							mPromotionDetailQuota.setEnabled(false);
+							mPromotionDetailQuota.setText("");
+						}
+					}
+
+				});
+
+		mPromotionDetailNameField = (EditText) rootView
+				.findViewById(R.id.promotionDetailNameField);
+		mPromotionDetailQuota = (EditText) rootView
+				.findViewById(R.id.promotionDetailQuota);
+		mPromotionDetailRequirement = (EditText) rootView
+				.findViewById(R.id.promotionDetailRequirement);
+
+		mPromotionDetailSubmit = (Button) rootView
+				.findViewById(R.id.promotionDetailSubmit);
+		mPromotionDetailSubmit.setOnClickListener(submitButton);
+
+		mPromotionDetailGetImage = (Button) rootView
+				.findViewById(R.id.promotionDetailGetImage);
+		mPromotionDetailGetImage.setOnClickListener(getImage);
+
+		mPromotionDetailStartDate = (EditText) rootView
+				.findViewById(R.id.promotionDetailStartDate);
+		mPromotionDetailStartDate.addTextChangedListener(tw);
+		mPromotionDetailEndDate = (EditText) rootView
+				.findViewById(R.id.promotionDetailEndDate);
+		mPromotionDetailEndDate.addTextChangedListener(tws);
 
 		// Intent Variables
 		// Setup Variable from the previous intents
@@ -180,6 +242,26 @@ public class PromotionDetail extends Fragment {
 	}
 
 	/*
+	 * On Click Listener
+	 */
+
+	OnClickListener getImage = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			getImage();
+		}
+	};
+
+	OnClickListener submitButton = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			// createPromotion();
+		}
+	};
+
+	/*
 	 * update details promotion to the database on clickbutton
 	 */
 
@@ -250,6 +332,130 @@ public class PromotionDetail extends Fragment {
 				}
 			});
 
+		}
+	};
+
+	/*
+	 * Text Watcher
+	 */
+
+	TextWatcher tw = new TextWatcher() {
+		private String current = "";
+		private String ddmmyyyy = "DDMMYYYY";
+
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before,
+				int count) {
+			if (!s.toString().equals(current)) {
+				String clean = s.toString().replaceAll("[^\\d.]", "");
+				String cleanC = current.replaceAll("[^\\d.]", "");
+
+				int cl = clean.length();
+				int sel = cl;
+				for (int i = 2; i <= cl && i < 6; i += 2) {
+					sel++;
+				}
+				// Fix for pressing delete next to a forward slash
+				if (clean.equals(cleanC))
+					sel--;
+
+				if (clean.length() < 8) {
+					clean = clean + ddmmyyyy.substring(clean.length());
+				} else {
+					// This part makes sure that when we finish entering
+					// numbers
+					// the date is correct, fixing it otherways
+					int day = Integer.parseInt(clean.substring(0, 2));
+					int mon = Integer.parseInt(clean.substring(2, 4));
+					int year = Integer.parseInt(clean.substring(4, 8));
+
+					if (mon > 12)
+						mon = 12;
+					Calendar cal = new GregorianCalendar();
+					cal.set(Calendar.MONTH, mon - 1);
+					day = (day > cal.getActualMaximum(Calendar.DATE)) ? cal
+							.getActualMaximum(Calendar.DATE) : day;
+					year = (year < 1900) ? 1900 : (year > 2100) ? 2100 : year;
+					clean = String.format("%02d%02d%02d", day, mon, year);
+				}
+
+				clean = String.format("%s/%s/%s", clean.substring(0, 2),
+						clean.substring(2, 4), clean.substring(4, 8));
+				current = clean;
+				mPromotionDetailStartDate.setText(current);
+				mPromotionDetailStartDate
+						.setSelection(sel < current.length() ? sel : current
+								.length());
+			}
+		}
+
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count,
+				int after) {
+		}
+
+		@Override
+		public void afterTextChanged(Editable s) {
+		}
+	};
+
+	TextWatcher tws = new TextWatcher() {
+		private String current = "";
+		private String ddmmyyyy = "DDMMYYYY";
+
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before,
+				int count) {
+			if (!s.toString().equals(current)) {
+				String clean = s.toString().replaceAll("[^\\d.]", "");
+				String cleanC = current.replaceAll("[^\\d.]", "");
+
+				int cl = clean.length();
+				int sel = cl;
+				for (int i = 2; i <= cl && i < 6; i += 2) {
+					sel++;
+				}
+				// Fix for pressing delete next to a forward slash
+				if (clean.equals(cleanC))
+					sel--;
+
+				if (clean.length() < 8) {
+					clean = clean + ddmmyyyy.substring(clean.length());
+				} else {
+					// This part makes sure that when we finish entering
+					// numbers
+					// the date is correct, fixing it otherways
+					int day = Integer.parseInt(clean.substring(0, 2));
+					int mon = Integer.parseInt(clean.substring(2, 4));
+					int year = Integer.parseInt(clean.substring(4, 8));
+
+					if (mon > 12)
+						mon = 12;
+					Calendar cal = new GregorianCalendar();
+					cal.set(Calendar.MONTH, mon - 1);
+					day = (day > cal.getActualMaximum(Calendar.DATE)) ? cal
+							.getActualMaximum(Calendar.DATE) : day;
+					year = (year < 1900) ? 1900 : (year > 2100) ? 2100 : year;
+					clean = String.format("%02d%02d%02d", day, mon, year);
+				}
+
+				clean = String.format("%s/%s/%s", clean.substring(0, 2),
+						clean.substring(2, 4), clean.substring(4, 8));
+				current = clean;
+				mPromotionDetailEndDate.setText(current);
+				mPromotionDetailEndDate
+						.setSelection(sel < current.length() ? sel : current
+								.length());
+			}
+		}
+
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count,
+				int after) {
+		}
+
+		@Override
+		public void afterTextChanged(Editable s) {
 		}
 	};
 

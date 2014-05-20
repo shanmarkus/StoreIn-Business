@@ -121,7 +121,7 @@ public class PromotionInformation extends ActionBarActivity implements
 			Bundle args = new Bundle();
 			switch (i) {
 			case 0:
-				fragment = new ItemDetail();
+				fragment = new PromotionDetail();
 				args.putString(ParseConstants.KEY_PROMOTION_ID, promotionId);
 				fragment.setArguments(args);
 				return fragment;
