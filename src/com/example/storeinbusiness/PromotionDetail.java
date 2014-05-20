@@ -52,6 +52,7 @@ public class PromotionDetail extends Fragment {
 	CheckBox mPromotionDetailClaimable;
 	Button mPromotionDetailSubmit;
 	Button mPromotionDetailGetImage;
+	Button mPromotionDetailDeleteButton;
 
 	// Fixed Variables
 	private Integer totalClaimed;
@@ -113,11 +114,15 @@ public class PromotionDetail extends Fragment {
 
 		mPromotionDetailSubmit = (Button) rootView
 				.findViewById(R.id.promotionDetailSubmit);
-		mPromotionDetailSubmit.setOnClickListener(submitButton);
+		mPromotionDetailSubmit.setOnClickListener(updateInfo);
 
 		mPromotionDetailGetImage = (Button) rootView
 				.findViewById(R.id.promotionDetailGetImage);
 		mPromotionDetailGetImage.setOnClickListener(getImage);
+
+		mPromotionDetailDeleteButton = (Button) rootView
+				.findViewById(R.id.promotionDetailDeleteButton);
+		mPromotionDetailDeleteButton.setOnClickListener(deleteButton);
 
 		mPromotionDetailStartDate = (EditText) rootView
 				.findViewById(R.id.promotionDetailStartDate);
@@ -319,13 +324,14 @@ public class PromotionDetail extends Fragment {
 			public void done(ParseObject promotion, ParseException e) {
 				if (e == null) {
 					promotion.deleteInBackground();
+					deletePromoRelPlace();
 				} else {
 					parseErrorDialog(e);
 				}
 			}
 		});
 	}
-	
+
 	/*
 	 * Delete Relation Promo Place
 	 */
@@ -354,10 +360,35 @@ public class PromotionDetail extends Fragment {
 			}
 		});
 	}
-	
+
 	/*
 	 * Delete Quotas
 	 */
+
+	private void deleteQuota() {
+		if (promotionId == null) {
+			getPromotionId();
+		}
+		ParseObject currentPromotion = ParseObject.createWithoutData(
+				ParseConstants.TABLE_PROMOTION, promotionId);
+		ParseQuery<ParseObject> query = ParseQuery
+				.getQuery(ParseConstants.TABLE_PROMOTION_QUOTA);
+		query.whereEqualTo(ParseConstants.KEY_PROMOTION_ID, currentPromotion);
+		query.getFirstInBackground(new GetCallback<ParseObject>() {
+
+			@Override
+			public void done(ParseObject promotionQuota, ParseException e) {
+				if (e == null) {
+					promotionQuota.deleteInBackground();
+					Toast.makeText(getActivity(),
+							"successfully Deleting Quota", Toast.LENGTH_SHORT)
+							.show();
+				} else {
+					parseErrorDialog(e);
+				}
+			}
+		});
+	}
 
 	/*
 	 * Intent on finding image on gallery
@@ -381,11 +412,21 @@ public class PromotionDetail extends Fragment {
 		}
 	};
 
-	OnClickListener submitButton = new OnClickListener() {
+	/*
+	 * Delete Promotion
+	 */
+
+	OnClickListener deleteButton = new OnClickListener() {
 
 		@Override
 		public void onClick(View v) {
-			// createPromotion();
+			promotionClaimable = mPromotionDetailClaimable.isChecked();
+			if (promotionClaimable == true) {
+				deletePromotion();
+				deleteQuota();
+			} else {
+				deletePromotion();
+			}
 		}
 	};
 
