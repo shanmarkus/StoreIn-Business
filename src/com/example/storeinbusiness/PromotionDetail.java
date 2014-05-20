@@ -69,6 +69,7 @@ public class PromotionDetail extends Fragment {
 	// Parse Variables
 	ParseUser user = ParseUser.getCurrentUser();
 	String userId = user.getObjectId();
+	DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 	// Intent Variables
 	protected static String promotionId;
@@ -216,7 +217,6 @@ public class PromotionDetail extends Fragment {
 					mPromotionDetailNameField.setText(promotionTitle);
 					mPromotionDetailRequirement.setText(promotionRequirement);
 
-					DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 					String temp = sdf.format(promotionStartDate);
 					String tempEnd = sdf.format(promotionEndDate);
 
@@ -224,6 +224,8 @@ public class PromotionDetail extends Fragment {
 					mPromotionDetailEndDate.setText(tempEnd);
 
 					mPromotionDetailClaimable.setChecked(promotionClaimable);
+					mPromotionDetailClaimable.setEnabled(promotionClaimable);
+
 					mPromotionDetailRewardPoint.setText(promotionRewardPoint
 							.toString());
 					if (promotionClaimable == true) {
@@ -271,6 +273,93 @@ public class PromotionDetail extends Fragment {
 	}
 
 	/*
+	 * Updating Quota
+	 */
+
+	private void setQuota(final Integer promotionQuota) {
+		if (promotionId == null) {
+			getPromotionId();
+		}
+		ParseObject currentPromotion = ParseObject.createWithoutData(
+				ParseConstants.TABLE_PROMOTION, promotionId);
+		ParseQuery<ParseObject> query = ParseQuery
+				.getQuery(ParseConstants.TABLE_PROMOTION_QUOTA);
+		query.whereEqualTo(ParseConstants.KEY_PROMOTION_ID, currentPromotion);
+		query.getFirstInBackground(new GetCallback<ParseObject>() {
+
+			@Override
+			public void done(ParseObject promotion, ParseException e) {
+				if (e == null) {
+					promotion.put(ParseConstants.KEY_QUOTA, promotionQuota);
+					promotion.saveInBackground();
+					Toast.makeText(getActivity(),
+							"successfully updating Quota", Toast.LENGTH_SHORT)
+							.show();
+				} else {
+					parseErrorDialog(e);
+				}
+			}
+		});
+	}
+
+	/*
+	 * Delete Promotion
+	 */
+
+	private void deletePromotion() {
+		if (promotionId == null) {
+			getPromotionId();
+		}
+
+		ParseQuery<ParseObject> query = ParseQuery
+				.getQuery(ParseConstants.TABLE_PROMOTION);
+		query.getInBackground(promotionId, new GetCallback<ParseObject>() {
+
+			@Override
+			public void done(ParseObject promotion, ParseException e) {
+				if (e == null) {
+					promotion.deleteInBackground();
+				} else {
+					parseErrorDialog(e);
+				}
+			}
+		});
+	}
+	
+	/*
+	 * Delete Relation Promo Place
+	 */
+
+	private void deletePromoRelPlace() {
+		if (promotionId == null) {
+			getPromotionId();
+		}
+		ParseObject currentPromotion = ParseObject.createWithoutData(
+				ParseConstants.TABLE_PROMOTION, promotionId);
+		ParseQuery<ParseObject> query = ParseQuery
+				.getQuery(ParseConstants.TABLE_REL_PROMOTION_PLACE);
+		query.whereEqualTo(ParseConstants.KEY_PROMOTION_ID, currentPromotion);
+		query.getFirstInBackground(new GetCallback<ParseObject>() {
+
+			@Override
+			public void done(ParseObject relPromotionPlace, ParseException e) {
+				if (e == null) {
+					relPromotionPlace.deleteInBackground();
+					Toast.makeText(getActivity(),
+							"successfully deleting Quota", Toast.LENGTH_SHORT)
+							.show();
+				} else {
+					parseErrorDialog(e);
+				}
+			}
+		});
+	}
+	
+	/*
+	 * Delete Quotas
+	 */
+
+	/*
 	 * Intent on finding image on gallery
 	 */
 
@@ -301,7 +390,7 @@ public class PromotionDetail extends Fragment {
 	};
 
 	/*
-	 * update details promotion to the database on clickbutton
+	 * update details promotion to the database on click button
 	 */
 
 	OnClickListener updateInfo = new OnClickListener() {
@@ -316,25 +405,60 @@ public class PromotionDetail extends Fragment {
 				@Override
 				public void done(ParseObject promotion, ParseException e) {
 					if (e == null) {
+						// get values
+						promotionTitle = mPromotionDetailNameField.getText()
+								.toString();
+						promotionRequirement = mPromotionDetailRequirement
+								.getText().toString();
+						promotionRewardPoint = Integer
+								.parseInt(mPromotionDetailRewardPoint.getText()
+										.toString());
+						String tempQuota = mPromotionDetailQuota.getText()
+								.toString();
+
+						try {
+							promotionStartDate = sdf
+									.parse(mPromotionDetailStartDate.getText()
+											.toString());
+						} catch (java.text.ParseException e1) {
+							e1.printStackTrace();
+						}
+						try {
+							promotionEndDate = sdf
+									.parse(mPromotionDetailEndDate.getText()
+											.toString());
+						} catch (java.text.ParseException e1) {
+							e1.printStackTrace();
+						}
+
+						// saving objects
 						if (promotion.getString(ParseConstants.KEY_NAME)
 								.equals(promotionTitle)) {
-							promotion.put(ParseConstants.KEY_NAME,
-									promotionTitle);
 							promotion.put(ParseConstants.KEY_REQUIREMENT,
 									promotionRequirement);
 							promotion.put(ParseConstants.KEY_START_DATE,
 									promotionStartDate);
 							promotion.put(ParseConstants.KEY_END_DATE,
 									promotionEndDate);
+							promotion.saveInBackground();
+							Toast.makeText(getActivity(), "Promotion Updated",
+									Toast.LENGTH_SHORT).show();
+
+							if (tempQuota.isEmpty()) {
+								// do nothing
+							} else {
+								// updating quotas
+								Integer promotionQuota = Integer
+										.parseInt(tempQuota);
+								setQuota(promotionQuota);
+							}
 						} else {
-							promotion.put(ParseConstants.KEY_START_DATE,
-									promotionStartDate);
-							promotion.put(ParseConstants.KEY_END_DATE,
-									promotionEndDate);
+							Toast.makeText(
+									getActivity(),
+									"Sorry You cannot change the promo name, please use add promotion instead",
+									Toast.LENGTH_SHORT).show();
 						}
-						promotion.saveInBackground();
-						Toast.makeText(getActivity(), "Item Updated",
-								Toast.LENGTH_SHORT).show();
+
 					} else {
 						parseErrorDialog(e);
 					}
