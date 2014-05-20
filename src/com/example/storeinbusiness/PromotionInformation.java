@@ -133,7 +133,7 @@ public class PromotionInformation extends ActionBarActivity implements
 				// return fragment;
 
 			default:
-				fragment = new ItemDetail();
+				fragment = new PromotionDetail();
 				args.putString(ParseConstants.KEY_OBJECT_ID, promotionId);
 				fragment.setArguments(args);
 				return fragment;

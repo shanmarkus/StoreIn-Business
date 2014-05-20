@@ -86,7 +86,7 @@ public class PromotionListFragment extends Fragment {
 				.findViewById(R.id.promotionListAddPromotion);
 
 		mPromotionListAddPromotion.setOnClickListener(addButtonListener);
-
+		mListPromotions.setOnItemClickListener(itemListener);
 		return rootView;
 	}
 
@@ -193,10 +193,9 @@ public class PromotionListFragment extends Fragment {
 				long id) {
 			Intent intent = new Intent(getActivity(),
 					PromotionInformation.class);
-			intent.putExtra(ParseConstants.KEY_ITEM_ID,
+			intent.putExtra(ParseConstants.KEY_PROMOTION_ID,
 					promotionId.get(position));
 			startActivity(intent);
-
 		}
 	};
 

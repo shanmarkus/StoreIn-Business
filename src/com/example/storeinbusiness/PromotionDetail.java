@@ -1,10 +1,11 @@
 package com.example.storeinbusiness;
 
 import java.io.ByteArrayOutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -23,21 +24,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.Toast;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.EditText;
+import android.widget.Toast;
 
-import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
-import com.parse.ParseImageView;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -61,7 +57,6 @@ public class PromotionDetail extends Fragment {
 	private Integer totalClaimed;
 	public final static int REQ_CODE_PICK_IMAGE = 1;
 	String promotionTitle;
-	String promotionDesc;
 	String promotionRequirement;
 	Boolean promotionClaimable;
 	Integer promotionRewardPoint;
@@ -84,7 +79,7 @@ public class PromotionDetail extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.fragment_item_detail,
+		View rootView = inflater.inflate(R.layout.fragment_promotion_detail,
 				container, false);
 
 		// Declare UI Variables
@@ -184,7 +179,7 @@ public class PromotionDetail extends Fragment {
 	 */
 	public String getPromotionId() {
 		Bundle args = getArguments();
-		promotionId = args.getString(ParseConstants.KEY_OBJECT_ID);
+		promotionId = args.getString(ParseConstants.KEY_PROMOTION_ID);
 		return promotionId;
 	}
 
@@ -192,9 +187,9 @@ public class PromotionDetail extends Fragment {
 	 * Find the detail of an item including description and rating
 	 */
 	public void findPromotionDetail() {
-		// set progress bar
-		getActivity().setProgressBarIndeterminate(true);
-
+		if (promotionId == null) {
+			getPromotionId();
+		}
 		// do the query
 		ParseQuery<ParseObject> query = ParseQuery
 				.getQuery(ParseConstants.TABLE_PROMOTION);
@@ -203,14 +198,10 @@ public class PromotionDetail extends Fragment {
 
 			@Override
 			public void done(ParseObject promotion, ParseException e) {
-				// set progress bar
-				getActivity().setProgressBarIndeterminate(false);
 				if (e == null) {
 					// success
 					promotionTitle = promotion
 							.getString(ParseConstants.KEY_NAME);
-					promotionDesc = promotion
-							.getString(ParseConstants.KEY_DESCRIPTION);
 					promotionRequirement = promotion
 							.getString(ParseConstants.KEY_REQUIREMENT);
 					promotionStartDate = promotion
@@ -222,13 +213,61 @@ public class PromotionDetail extends Fragment {
 					promotionRewardPoint = promotion
 							.getInt(ParseConstants.KEY_REWARD_POINT);
 
+					mPromotionDetailNameField.setText(promotionTitle);
+					mPromotionDetailRequirement.setText(promotionRequirement);
+
+					DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+					String temp = sdf.format(promotionStartDate);
+					String tempEnd = sdf.format(promotionEndDate);
+
+					mPromotionDetailStartDate.setText(temp);
+					mPromotionDetailEndDate.setText(tempEnd);
+
+					mPromotionDetailClaimable.setChecked(promotionClaimable);
+					mPromotionDetailRewardPoint.setText(promotionRewardPoint
+							.toString());
+					if (promotionClaimable == true) {
+						getQuota();
+					} else {
+						// do nothing
+					}
 				} else {
 					// failed
+					Toast.makeText(getActivity(), "here", Toast.LENGTH_SHORT)
+							.show();
 					parseErrorDialog(e);
 				}
 			}
 		});
 
+	}
+
+	/*
+	 * Find the number of quota
+	 */
+
+	private void getQuota() {
+		if (promotionId == null) {
+			getPromotionId();
+		}
+		ParseObject currentPromotion = ParseObject.createWithoutData(
+				ParseConstants.TABLE_PROMOTION, promotionId);
+		ParseQuery<ParseObject> query = ParseQuery
+				.getQuery(ParseConstants.TABLE_PROMOTION_QUOTA);
+		query.whereEqualTo(ParseConstants.KEY_PROMOTION_ID, currentPromotion);
+		query.getFirstInBackground(new GetCallback<ParseObject>() {
+
+			@Override
+			public void done(ParseObject promotionQuota, ParseException e) {
+				if (e == null) {
+					Integer temp = promotionQuota
+							.getInt(ParseConstants.KEY_QUOTA);
+					mPromotionDetailQuota.setText(temp.toString());
+				} else {
+					parseErrorDialog(e);
+				}
+			}
+		});
 	}
 
 	/*
@@ -281,8 +320,6 @@ public class PromotionDetail extends Fragment {
 								.equals(promotionTitle)) {
 							promotion.put(ParseConstants.KEY_NAME,
 									promotionTitle);
-							promotion.put(ParseConstants.KEY_DESCRIPTION,
-									promotionDesc);
 							promotion.put(ParseConstants.KEY_REQUIREMENT,
 									promotionRequirement);
 							promotion.put(ParseConstants.KEY_START_DATE,
@@ -290,8 +327,6 @@ public class PromotionDetail extends Fragment {
 							promotion.put(ParseConstants.KEY_END_DATE,
 									promotionEndDate);
 						} else {
-							promotion.put(ParseConstants.KEY_DESCRIPTION,
-									promotionDesc);
 							promotion.put(ParseConstants.KEY_START_DATE,
 									promotionStartDate);
 							promotion.put(ParseConstants.KEY_END_DATE,
