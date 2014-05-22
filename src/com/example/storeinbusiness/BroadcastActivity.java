@@ -144,9 +144,16 @@ public class BroadcastActivity extends ActionBarActivity {
 		 */
 
 		private void sendNotification() {
+			if (placeName == null) {
+				getInformation();
+			}
+			// Set Channel
+			String tempTenants = placeName.replaceAll("\\p{Z}", "");
+			tempTenants = tempTenants + placeID;
+
 			message = mBroadcastEditTextMessage.getText().toString();
 			ParsePush push = new ParsePush();
-			push.setChannel(placeID);
+			push.setChannel(tempTenants);
 			push.setMessage(message + "- Send by " + placeName);
 			push.sendInBackground(new SendCallback() {
 

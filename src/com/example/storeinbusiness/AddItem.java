@@ -176,7 +176,7 @@ public class AddItem extends ActionBarActivity {
 			item.put(ParseConstants.KEY_DESCRIPTION, itemDesc);
 			item.put(ParseConstants.KEY_RATING, 0);
 			item.put(ParseConstants.KEY_TOTAL_LOVED, 0);
-			
+
 			if (image == null) {
 				Toast.makeText(
 						getActivity(),
@@ -305,9 +305,14 @@ public class AddItem extends ActionBarActivity {
 					if (placeName == null) {
 						getPlaceName();
 					}
+					
+					// Set Channel
+					String tempTenants = placeName.replaceAll("\\p{Z}", "");
+					tempTenants = tempTenants + placeId;
+					
 					String message = "Check Out " + itemTitle;
 					ParsePush push = new ParsePush();
-					push.setChannel(placeId);
+					push.setChannel(tempTenants);
 					push.setMessage(message + "- Only Available at "
 							+ placeName);
 					push.sendInBackground(new SendCallback() {
